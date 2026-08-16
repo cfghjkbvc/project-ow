@@ -150,6 +150,16 @@ const CSS = FONT_CSS + `
   font-size:22px; padding:8px 2px 3px; text-align:center;}
 .ow .reveal-img{display:block; width:238px; height:auto; padding:0; border:0; border-radius:6px;
   box-shadow:0 14px 32px rgba(0,0,0,.45); animation:ow-turn .55s cubic-bezier(.2,.8,.3,1) both;}
+
+/* Role carousel. Native scroll-snap, with the track padded by half a card so
+   the first and last can actually reach the centre. */
+.ow .carou{display:flex; gap:14px; margin-top:14px; overflow-x:auto; overscroll-behavior-x:contain;
+  scroll-snap-type:x mandatory; padding:6px calc(50% - 106px) 12px;
+  scrollbar-width:none; -ms-overflow-style:none; -webkit-overflow-scrolling:touch;}
+.ow .carou::-webkit-scrollbar{display:none;}
+.ow .rolecard{flex:0 0 212px; width:212px; scroll-snap-align:center;}
+.ow .rolecard .reveal,.ow .rolecard .reveal-img{width:100%; animation:none;}
+.ow .carou .dot{width:8px; height:8px; padding:0; transform:rotate(45deg);}
 .ow .mini{flex:1; background:var(--bone); border:2px solid var(--ink); padding:9px 8px 7px; text-align:center;}
 .ow .mini .k{font-family:var(--f-ui); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:rgba(23,18,14,.6);}
 .ow .mini .v{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink); font-size:19px; margin-top:4px;}

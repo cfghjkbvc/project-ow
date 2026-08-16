@@ -4,7 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="path fix" />
+    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="UI adjustments">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +108,7 @@
       <updated>1786898002318</updated>
       <workItem from="1786898004116" duration="838000" />
       <workItem from="1786903685110" duration="4086000" />
-      <workItem from="1786908523092" duration="1763000" />
+      <workItem from="1786908523092" duration="2502000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -156,7 +158,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786910255146</updated>
     </task>
-    <option name="localTasksCounter" value="7" />
+    <task id="LOCAL-00007" summary="UI adjustments">
+      <option name="closed" value="true" />
+      <created>1786910715059</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1786910715059</updated>
+    </task>
+    <option name="localTasksCounter" value="8" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -177,7 +187,8 @@
     <MESSAGE value="init" />
     <MESSAGE value="npm fix" />
     <MESSAGE value="path fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="path fix" />
+    <MESSAGE value="UI adjustments" />
+    <option name="LAST_COMMIT_MESSAGE" value="UI adjustments" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/odd_word$prep_art.coverage" NAME="prep_art Coverage Results" MODIFIED="1786906252005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

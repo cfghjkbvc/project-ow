@@ -22,7 +22,7 @@ function Packs({ state, dispatch }) {
             <div className={`row ${on ? "row-on" : ""}`} key={p.id}>
               <button className="tick" data-on={on ? "1" : "0"} role="switch" aria-checked={on}
                 aria-label={p.name}
-                onClick={() => { buzz(8); dispatch({ type: "TOGGLE_PACK", id: p.id }); }} />
+                onClick={() => { buzz("tick"); dispatch({ type: "TOGGLE_PACK", id: p.id }); }} />
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="nm" style={{ fontSize: 17 }}>{p.name}</div>
                 <div className="quiet" style={{ fontSize: 12 }}>{t("pairsN", p.pairs.length)} · {p.lang.toUpperCase()}</div>
@@ -64,7 +64,7 @@ function Editor({ state, dispatch }) {
     if (!a.trim() || !b.trim()) return setErr(t("bothWords"));
     const k = pairKey({ a: a.trim(), b: b.trim() });
     if (pack.pairs.some((p) => pairKey(p) === k)) return setErr(t("dupe"));
-    setErr(""); buzz(10);
+    setErr(""); buzz("tick");
     dispatch({ type: "PATCH_PACK", id: pack.id, patch: { pairs: [...pack.pairs, { a: a.trim(), b: b.trim(), sim }] } });
     setA(""); setB("");
   };

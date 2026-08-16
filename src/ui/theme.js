@@ -21,6 +21,11 @@ const CSS = FONT_CSS + `
 /* Images must never offer the iOS copy/save sheet on a long press — the reveal
    gesture IS a long press, so the two collide. pointer-events:none passes the
    touch through to the card and the carousel underneath. */
+/* Nothing in the app is selectable text — a long press is the reveal gesture,
+   and a finger that drifts off the card would otherwise start highlighting
+   the hint line and the button underneath it. */
+.ow, .ow *{user-select:none; -webkit-user-select:none;}
+.ow input, .ow textarea{user-select:text; -webkit-user-select:text;}
 .ow img{-webkit-user-drag:none; user-select:none; -webkit-user-select:none;
   -webkit-touch-callout:none; pointer-events:none;}
 /* svh, not dvh: dvh changes as the browser toolbar hides and shows, which
@@ -142,15 +147,14 @@ const CSS = FONT_CSS + `
   color:rgba(23,18,14,.72); padding:0 6px;}
 .ow .banner .note{font-size:clamp(9px,3.6cqw,11px);}
 
-/* Same plate on every card so the layout never leaks which side you're on.
-   Special roles get the ink fill — unmissable up close, and still just a
-   cream card with black type from across the table. */
-.ow .roleplate{width:100%; border:1.5px solid var(--ink); padding:4px 6px 5px;
-  background:var(--bone); color:var(--ink);}
-.ow .roleplate-hot{background:var(--ink); color:var(--bone); border-color:var(--ink);}
-.ow .rp-title{font-family:var(--f-fat); text-transform:uppercase; letter-spacing:.05em;
-  font-size:clamp(11px,4.6cqw,15px); line-height:1.1;}
-.ow .rp-note{font-family:var(--f-ui); line-height:1.35; opacity:.82; margin-top:2px;
+/* One inverted plate on every card, so the shape carries no information.
+   Only the words and the title colour differ — and civilian and impostor
+   share both of those. */
+.ow .roleplate{width:100%; border:1.5px solid var(--ink); padding:5px 7px 6px;
+  background:var(--ink); color:var(--bone);}
+.ow .rp-title{font-family:var(--f-fat); text-transform:uppercase; letter-spacing:.04em;
+  font-size:clamp(11px,4.8cqw,16px); line-height:1.1;}
+.ow .rp-note{font-family:var(--f-ui); line-height:1.35; opacity:.85; margin-top:2px;
   font-size:clamp(8.5px,3.4cqw,10.5px);}
 .ow .who{font-family:var(--f-serif); font-weight:600; font-size:10px; letter-spacing:.22em;
   text-transform:uppercase; color:rgba(23,18,14,.6); padding:3px 0 5px;}

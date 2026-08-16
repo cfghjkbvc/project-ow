@@ -6,30 +6,42 @@ import { roman } from "../game/helpers.js";
 /* -------------------------------- Deal -------------------------------- */
 
 
-/* Every card carries a titled plate, and civilian and impostor plates read
-   identically — the shape of the card must never say which side you're on.
+/* Every card ends in the same inverted plate, so the shape of a card never
+   says which side you're on. Only the words and the title colour differ, and
+   civilian and impostor share both.
+
    The plate exists because a Jester who doesn't notice they're the Jester
-   plays the round as a civilian and the role is wasted. */
+   plays the round as a civilian and the role is wasted. For the Accomplice
+   the partner's name is the one thing they need, so it becomes the headline
+   rather than sitting buried in the small print. */
+const TITLE_TONE = {
+  civilian: "var(--bone)",
+  undercover: "var(--bone)",
+  mrwhite: "var(--bone)",
+  jester: "var(--marigold)",
+  accomplice: "#9FC0FF",
+};
+
 function cardFace(role, round) {
   const n = NOTES[getLang()] || NOTES.en;
-  const note = role === "accomplice" ? n.accomplice(round.accompliceOf) : n[role];
   const word = role === "mrwhite" ? t("r_mrwhite") : role === "undercover" ? round.ucWord : round.civWord;
   const title =
-    role === "mrwhite" ? t("noWordPlate")
-      : role === "jester" || role === "accomplice" ? t("r_" + role)
-        : t("yourWord");
-  const special = role === "mrwhite" || role === "jester" || role === "accomplice";
-  return { word, note, title, special };
+    role === "accomplice" ? round.accompliceOf
+      : role === "mrwhite" ? t("noWordPlate")
+        : role === "jester" ? t("r_jester")
+          : t("yourWord");
+  return { word, note: n[role], title, tone: TITLE_TONE[role] };
 }
 
-function HoldCard({ name, numeral, sigil, word, note, title, special, onSeen }) {
+function HoldCard({ name, numeral, sigil, word, note, title, tone, onSeen }) {
   const [open, setOpen] = useState(false);
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
 
   const down = (e) => {
-    e.preventDefault?.(); buzz(12); setOpen(true);
-    timer.current = setTimeout(() => onSeen?.(), 400);
+    e.preventDefault?.(); buzz("tap"); setOpen(true);
+    // The useful signal is not "you pressed" but "you have held long enough".
+    timer.current = setTimeout(() => { buzz("ready"); onSeen?.(); }, 400);
   };
   const up = () => { clearTimeout(timer.current); setOpen(false); };
 
@@ -59,8 +71,8 @@ function HoldCard({ name, numeral, sigil, word, note, title, special, onSeen }) 
             </div>
             <div className="banner">
               <div className="word">{word}</div>
-              <div className={"roleplate" + (special ? " roleplate-hot" : "")}>
-                <div className="rp-title">{title}</div>
+              <div className="roleplate">
+                <div className="rp-title" style={{ color: tone }}>{title}</div>
                 <div className="rp-note">{note}</div>
               </div>
             </div>
@@ -86,7 +98,7 @@ function Deal({ state, dispatch }) {
   // A double tap here would skip someone's card entirely, so it locks briefly.
   const advance = () => {
     if (lock) return;
-    setLock(true); buzz(10);
+    setLock(true); buzz("tap");
     dispatch({ type: "NEXT_CARD" });
     setTimeout(() => setLock(false), 450);
   };
@@ -103,7 +115,7 @@ function Deal({ state, dispatch }) {
       <div className="stage">
         <HoldCard key={round.dealIndex} name={player.name} numeral={roman(round.dealIndex + 1)}
           sigil={round.sigil} word={face.word} note={face.note}
-          title={face.title} special={face.special} onSeen={() => setSeen(true)} />
+          title={face.title} tone={face.tone} onSeen={() => setSeen(true)} />
         <p className="quiet" style={{ textAlign: "center", height: 20, fontSize: 12.5 }}>
           {seen ? t("letGo") : t("holdPress")}
         </p>
@@ -122,7 +134,7 @@ function Deal({ state, dispatch }) {
         <Sheet onClose={() => setConfirm(false)} label={t("redeal")}>
           <div className="fat" style={{ fontSize: 25, textTransform: "uppercase", lineHeight: 1.12 }}>{t("redealTitle")}</div>
           <p className="quiet" style={{ margin: "10px 0 20px" }}>{t("redealBody")}</p>
-          <Btn onClick={() => { buzz(14); dispatch({ type: "REDEAL" }); setConfirm(false); }}>{t("redeal")}</Btn>
+          <Btn onClick={() => { buzz("tap"); dispatch({ type: "REDEAL" }); setConfirm(false); }}>{t("redeal")}</Btn>
           <div style={{ height: 9 }} />
           <Btn kind="btn-ghost" onClick={() => setConfirm(false)}>{t("cancel")}</Btn>
         </Sheet>

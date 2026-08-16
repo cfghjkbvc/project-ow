@@ -18,7 +18,7 @@ function Guess({ state, dispatch }) {
           placeholder={t("typeWord")} onChange={(e) => setText(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && text.trim() && dispatch({ type: "SUBMIT_GUESS", text })} />
       </div>
-      <Btn disabled={!text.trim()} onClick={() => { buzz(14); dispatch({ type: "SUBMIT_GUESS", text }); }}>{t("lockIn")}</Btn>
+      <Btn disabled={!text.trim()} onClick={() => { buzz("tap"); dispatch({ type: "SUBMIT_GUESS", text }); }}>{t("lockIn")}</Btn>
     </>
   );
 }
@@ -37,7 +37,7 @@ function GuessResult({ state, dispatch }) {
         </div>
         <p className="quiet" style={{ textAlign: "center", maxWidth: 265 }}>{guess.auto ? t("closeEnough") : t("notMatch")}</p>
       </div>
-      <Btn onClick={() => { buzz([40, 60, 40]); dispatch({ type: "JUDGE_GUESS", correct: true }); }}>{t("tableYes")}</Btn>
+      <Btn onClick={() => { buzz("win"); dispatch({ type: "JUDGE_GUESS", correct: true }); }}>{t("tableYes")}</Btn>
       <div style={{ height: 9 }} />
       <Btn kind="btn-ghost" onClick={() => dispatch({ type: "JUDGE_GUESS", correct: false })}>{t("tableNo")}</Btn>
     </>

@@ -13,7 +13,7 @@ function End({ state, dispatch }) {
   const gone = state.retired.includes(round.pairKey);
   const ranked = [...seated(state)].sort((x, y) => (scores[y.id] || 0) - (scores[x.id] || 0));
 
-  useEffect(() => { buzz([40, 60, 40, 60, 90]); }, []);
+  useEffect(() => { buzz("win"); }, []);
 
   return (
     <>
@@ -31,7 +31,7 @@ function End({ state, dispatch }) {
       </div>
 
       <button className="eyebrow" style={{ alignSelf: "center", padding: "12px 0 0", opacity: gone ? 0.5 : 1 }}
-        disabled={gone} onClick={() => { buzz(10); dispatch({ type: "RETIRE", key: round.pairKey }); }}>
+        disabled={gone} onClick={() => { buzz("tick"); dispatch({ type: "RETIRE", key: round.pairKey }); }}>
         {gone ? t("retired") : t("retire")}
       </button>
 

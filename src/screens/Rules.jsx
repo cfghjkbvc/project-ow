@@ -27,7 +27,7 @@ function RoleCarousel() {
 
   const go = (i) => {
     const next = Math.max(0, Math.min(ROLES.length - 1, i));
-    buzz(8);
+    buzz("tick");
     track.current?.scrollTo({ left: next * (CARD_W + GAP), behavior: "smooth" });
     setActive(next);
   };

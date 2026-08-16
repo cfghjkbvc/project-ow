@@ -26,6 +26,7 @@ const STR = {
     atTable: (n, m) => `Playing tonight · ${n} of ${m}`, addName: "Add a name",
     rememberNote: "Everyone stays on the list. Untick whoever isn't here tonight.",
     language: "Language", haptics: "Vibration", on: "On", off: "Off",
+    hapticsUnsupported: "This browser has no vibration. Safari on iPhone never supports it.",
     rolesInPlay: "Roles in play",
     p_classic: "Classic", p_white: "Mr White", p_wild: "Wild",
     pn_classic: "Impostors only. Everyone else shares one word.",
@@ -110,6 +111,7 @@ const STR = {
     atTable: (n, m) => `Ma játszik · ${n} / ${m}`, addName: "Név hozzáadása",
     rememberNote: "Mindenki a listán marad. Vedd ki a pipát, aki ma nincs itt.",
     language: "Nyelv", haptics: "Rezgés", on: "Be", off: "Ki",
+    hapticsUnsupported: "Ez a böngésző nem tud rezegni. Az iPhone Safari soha nem támogatja.",
     rolesInPlay: "Szerepek",
     p_classic: "Klasszikus", p_white: "Mr. White", p_wild: "Vad",
     pn_classic: "Csak beépülők. Mindenki más ugyanazt a szót kapja.",
@@ -181,7 +183,32 @@ const t = (k, ...a) => {
   const v = STR[L][k] ?? STR.en[k] ?? k;
   return typeof v === "function" ? v(...a) : v;
 };
-const buzz = (p) => { try { if (HAP && navigator.vibrate) navigator.vibrate(p); } catch (_) {} };
+/* Haptics.
+
+   Two reasons the old durations were never felt: a phone's vibration motor
+   needs roughly 20ms just to spin up, so anything under that is silent, and
+   the old values were 8-14ms. Everything below is at or above the threshold.
+
+   The second reason is iOS: Safari does not implement navigator.vibrate at
+   all, on any version. There is no shim worth shipping, so the setting is
+   disabled and labelled rather than left looking broken. */
+export const HAPTICS_SUPPORTED =
+  typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
+
+export const HAP_PATTERN = {
+  tick: 20,                      // toggles, dots, small confirmations
+  tap: 32,                       // primary buttons, passing the phone
+  ready: [18, 45, 55],           // the hold registered — you may let go
+  vote: [45, 40, 45],            // consequential, irreversible
+  win: [40, 55, 40, 55, 95],     // the round is over
+};
+
+const buzz = (p) => {
+  try {
+    if (!HAP || !HAPTICS_SUPPORTED) return;
+    navigator.vibrate(typeof p === "string" ? HAP_PATTERN[p] ?? HAP_PATTERN.tick : p);
+  } catch (_) {}
+};
 
 /* Civilian and impostor MUST read identically. You are not told which side
    you are on — that uncertainty is the whole game, and it is why civilians
@@ -191,14 +218,14 @@ const NOTES = {
   en: {
     mrwhite: "No word this round. Listen, bluff, and work out what the others are holding.",
     jester: "You are the Fool. You win alone if the table votes you out.",
-    accomplice: (n) => `${n} is an impostor. Cover for them and you win together.`,
+    accomplice: "is an impostor. Cover for them and you both win.",
     undercover: "Say one word about it on your turn. Someone here holds a different word.",
     civilian: "Say one word about it on your turn. Someone here holds a different word.",
   },
   hu: {
     mrwhite: "Ebben a körben nincs szavad. Figyelj, blöffölj, és találd ki, mi van a többieknél.",
     jester: "Te vagy a Bolond. Egyedül nyersz, ha kiszavaznak.",
-    accomplice: (n) => `${n} beépülő. Fedezd, és együtt nyertek.`,
+    accomplice: "beépülő. Fedezd, és együtt nyertek.",
     undercover: "A körödben mondj rá egy szót. Valakinél más szó van.",
     civilian: "A körödben mondj rá egy szót. Valakinél más szó van.",
   },

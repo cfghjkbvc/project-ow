@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Btn, Chip } from "../ui/atoms.jsx";
 import { ROLE, EXTRAS, PRESETS } from "../ui/sigils.jsx";
 import { GAPS, activePairs, seated } from "../game/state.js";
-import { t, buzz, setHaptics } from "../data/strings.js";
+import { t, buzz, setHaptics, HAPTICS_SUPPORTED } from "../data/strings.js";
 import { roman } from "../game/helpers.js";
 
 /* ------------------------------- Setup -------------------------------- */
@@ -48,7 +48,7 @@ function Setup({ state, dispatch }) {
                   <div className={`row ${on ? "row-on" : "row-off"}`} key={p.id}>
                     <button className="tick" data-on={on ? "1" : "0"} role="switch" aria-checked={on}
                       aria-label={p.name}
-                      onClick={() => { buzz(8); dispatch({ type: "TOGGLE_SEAT", id: p.id }); }} />
+                      onClick={() => { buzz("tick"); dispatch({ type: "TOGGLE_SEAT", id: p.id }); }} />
                     <span className="nm">{p.name}</span>
                     <button className="x" onClick={() => dispatch({ type: "REMOVE_PLAYER", id: p.id })} aria-label={p.name}>×</button>
                   </div>
@@ -71,10 +71,14 @@ function Setup({ state, dispatch }) {
             </div>
 
             <div className="eyebrow" style={{ marginTop: 22 }}>{t("haptics")}</div>
-            <div className="seg" style={{ marginTop: 11 }}>
-              <button data-on={settings.haptics ? "1" : "0"} onClick={() => { setHaptics(true); buzz(12); dispatch({ type: "SET", key: "haptics", value: true }); }}>{t("on")}</button>
-              <button data-on={!settings.haptics ? "1" : "0"} onClick={() => dispatch({ type: "SET", key: "haptics", value: false })}>{t("off")}</button>
-            </div>
+            {HAPTICS_SUPPORTED ? (
+              <div className="seg" style={{ marginTop: 11 }}>
+                <button data-on={settings.haptics ? "1" : "0"} onClick={() => { setHaptics(true); buzz("tap"); dispatch({ type: "SET", key: "haptics", value: true }); }}>{t("on")}</button>
+                <button data-on={!settings.haptics ? "1" : "0"} onClick={() => dispatch({ type: "SET", key: "haptics", value: false })}>{t("off")}</button>
+              </div>
+            ) : (
+              <p className="quiet" style={{ marginTop: 9 }}>{t("hapticsUnsupported")}</p>
+            )}
           </div>
         )}
 
@@ -156,7 +160,7 @@ function Setup({ state, dispatch }) {
       </div>
 
       <div style={{ marginTop: 16 }}>
-        <Btn disabled={!ready} onClick={() => { buzz(14); dispatch({ type: "DEAL" }); }}>
+        <Btn disabled={!ready} onClick={() => { buzz("tap"); dispatch({ type: "DEAL" }); }}>
           {here.length < 4 ? t("fourMin") : pairCount === 0 ? t("noPairs") : t("dealRound")}
         </Btn>
       </div>

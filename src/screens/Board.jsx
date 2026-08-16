@@ -72,7 +72,7 @@ function Board({ state, dispatch }) {
           <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
             {here.filter((p) => round.alive.includes(p.id)).map((p) => (
               <button className="row" key={p.id}
-                onClick={() => { buzz(10); dispatch({ type: "PEEK", id: p.id }); setPeeking(false); }}>
+                onClick={() => { buzz("tap"); dispatch({ type: "PEEK", id: p.id }); setPeeking(false); }}>
                 <span className="nm">{p.name}</span>
               </button>
             ))}
@@ -86,7 +86,7 @@ function Board({ state, dispatch }) {
         <Sheet onClose={() => setTarget(null)} label={t("voteBtn")}>
           <div className="fat" style={{ fontSize: 26, textTransform: "uppercase", lineHeight: 1.1 }}>{t("voteOut", target.name)}</div>
           <p className="quiet" style={{ margin: "10px 0 20px" }}>{settings.revealOnVote ? t("voteWarn") : t("voteSealed")}</p>
-          <Btn kind="btn-danger" onClick={() => { buzz([30, 50, 30]); dispatch({ type: "ELIMINATE", id: target.id }); setTarget(null); }}>{t("voteBtn")}</Btn>
+          <Btn kind="btn-danger" onClick={() => { buzz("vote"); dispatch({ type: "ELIMINATE", id: target.id }); setTarget(null); }}>{t("voteBtn")}</Btn>
           <div style={{ height: 9 }} />
           <Btn kind="btn-ghost" onClick={() => setTarget(null)}>{t("cancel")}</Btn>
         </Sheet>

@@ -116,10 +116,10 @@ const CSS = FONT_CSS + `
 .ow .card[data-open="1"] .back{opacity:0;}
 .ow .panel{position:relative; width:100%; aspect-ratio:1; flex:none; background:var(--bone);
   border:1px solid var(--ink); display:flex; align-items:center; justify-content:center; overflow:hidden;}
-.ow .panel-full{aspect-ratio:auto; flex:1;}
+.ow .panel-full{position:absolute; inset:0; aspect-ratio:auto; width:auto; height:auto;}
 .ow .panel img{width:100%; height:100%; object-fit:cover; display:block;}
 .ow .panel .line{width:62%; max-width:170px; color:var(--ink);}
-.ow .lattice{position:absolute; inset:0;}
+.ow .lattice{position:absolute; inset:0; width:100%; height:100%; display:block;}
 .ow .plate{position:absolute; top:-1px; left:50%; transform:translateX(-50%); z-index:2;
   background:var(--bone); border:1px solid var(--ink); border-top:0; padding:3px 13px 4px;
   font-family:var(--f-serif); font-weight:800; font-size:13px; letter-spacing:.14em; color:var(--ink);}
@@ -173,6 +173,21 @@ const CSS = FONT_CSS + `
   .ow-shell{padding:14px 18px calc(14px + env(safe-area-inset-bottom));}
   .ow .stage{gap:10px; padding:6px 0;}
   .ow .btn{padding:13px 34px;}
+}
+
+/* On a laptop the 440px column stranded in the middle of a huge navy field
+   reads as a broken page. Standing it up as a bounded card on the table
+   makes the same layout look deliberate. */
+@media (min-width:760px){
+  .ow{display:flex; align-items:center; justify-content:center; padding:28px 0;}
+  .ow-frame{display:none;}
+  .ow-shell{width:440px; min-height:0; height:min(900px, calc(100dvh - 56px));
+    background:var(--teal-d); border:1px solid var(--hair);
+    box-shadow:0 28px 70px rgba(0,0,0,.5); padding:26px 24px;}
+  .ow-shell::before,.ow-shell::after{content:''; position:absolute; width:13px; height:13px;
+    border:1px solid rgba(247,235,207,.45); pointer-events:none;}
+  .ow-shell::before{top:7px; left:7px; border-right:0; border-bottom:0;}
+  .ow-shell::after{bottom:7px; right:7px; border-left:0; border-top:0;}
 }
 @media (prefers-reduced-motion:reduce){.ow *,.ow *::before,.ow *::after{animation:none !important; transition:none !important;}}
 `;

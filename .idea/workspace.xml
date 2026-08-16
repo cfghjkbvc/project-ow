@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="npm fix" />
+    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="path fix" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -106,7 +106,7 @@
       <updated>1786898002318</updated>
       <workItem from="1786898004116" duration="838000" />
       <workItem from="1786903685110" duration="4086000" />
-      <workItem from="1786908523092" duration="1446000" />
+      <workItem from="1786908523092" duration="1763000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -140,7 +140,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786909994966</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="path fix">
+      <option name="closed" value="true" />
+      <created>1786910141611</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1786910141611</updated>
+    </task>
+    <task id="LOCAL-00006" summary="path fix">
+      <option name="closed" value="true" />
+      <created>1786910255146</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1786910255146</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -160,7 +176,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="init" />
     <MESSAGE value="npm fix" />
-    <option name="LAST_COMMIT_MESSAGE" value="npm fix" />
+    <MESSAGE value="path fix" />
+    <option name="LAST_COMMIT_MESSAGE" value="path fix" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/odd_word$prep_art.coverage" NAME="prep_art Coverage Results" MODIFIED="1786906252005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

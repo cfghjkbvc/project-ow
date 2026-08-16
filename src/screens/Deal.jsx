@@ -6,14 +6,23 @@ import { roman } from "../game/helpers.js";
 /* -------------------------------- Deal -------------------------------- */
 
 
+/* Every card carries a titled plate, and civilian and impostor plates read
+   identically — the shape of the card must never say which side you're on.
+   The plate exists because a Jester who doesn't notice they're the Jester
+   plays the round as a civilian and the role is wasted. */
 function cardFace(role, round) {
   const n = NOTES[getLang()] || NOTES.en;
   const note = role === "accomplice" ? n.accomplice(round.accompliceOf) : n[role];
   const word = role === "mrwhite" ? t("r_mrwhite") : role === "undercover" ? round.ucWord : round.civWord;
-  return { word, note };
+  const title =
+    role === "mrwhite" ? t("noWordPlate")
+      : role === "jester" || role === "accomplice" ? t("r_" + role)
+        : t("yourWord");
+  const special = role === "mrwhite" || role === "jester" || role === "accomplice";
+  return { word, note, title, special };
 }
 
-function HoldCard({ name, numeral, sigil, word, note, onSeen }) {
+function HoldCard({ name, numeral, sigil, word, note, title, special, onSeen }) {
   const [open, setOpen] = useState(false);
   const timer = useRef(null);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -50,7 +59,10 @@ function HoldCard({ name, numeral, sigil, word, note, onSeen }) {
             </div>
             <div className="banner">
               <div className="word">{word}</div>
-              <div className="note">{note}</div>
+              <div className={"roleplate" + (special ? " roleplate-hot" : "")}>
+                <div className="rp-title">{title}</div>
+                <div className="rp-note">{note}</div>
+              </div>
             </div>
           </div>
         </div>
@@ -90,7 +102,8 @@ function Deal({ state, dispatch }) {
 
       <div className="stage">
         <HoldCard key={round.dealIndex} name={player.name} numeral={roman(round.dealIndex + 1)}
-          sigil={round.sigil} word={face.word} note={face.note} onSeen={() => setSeen(true)} />
+          sigil={round.sigil} word={face.word} note={face.note}
+          title={face.title} special={face.special} onSeen={() => setSeen(true)} />
         <p className="quiet" style={{ textAlign: "center", height: 20, fontSize: 12.5 }}>
           {seen ? t("letGo") : t("holdPress")}
         </p>

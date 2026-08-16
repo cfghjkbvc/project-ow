@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Btn, Chip } from "../ui/atoms.jsx";
 import { ROLE, EXTRAS, PRESETS } from "../ui/sigils.jsx";
 import { GAPS, activePairs, seated } from "../game/state.js";
-import { t, buzz } from "../data/strings.js";
+import { t, buzz, setHaptics } from "../data/strings.js";
 import { roman } from "../game/helpers.js";
 
 /* ------------------------------- Setup -------------------------------- */
@@ -72,7 +72,7 @@ function Setup({ state, dispatch }) {
 
             <div className="eyebrow" style={{ marginTop: 22 }}>{t("haptics")}</div>
             <div className="seg" style={{ marginTop: 11 }}>
-              <button data-on={settings.haptics ? "1" : "0"} onClick={() => { HAP = true; buzz(12); dispatch({ type: "SET", key: "haptics", value: true }); }}>{t("on")}</button>
+              <button data-on={settings.haptics ? "1" : "0"} onClick={() => { setHaptics(true); buzz(12); dispatch({ type: "SET", key: "haptics", value: true }); }}>{t("on")}</button>
               <button data-on={!settings.haptics ? "1" : "0"} onClick={() => dispatch({ type: "SET", key: "haptics", value: false })}>{t("off")}</button>
             </div>
           </div>

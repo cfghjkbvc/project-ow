@@ -1,4 +1,4 @@
-html, body, #root { margin: 0; padding: 0; min-height: 100dvh; }
+html, body, #root { margin: 0; padding: 0; min-height: 100svh; }
 
 /* This is the colour the browser paints outside the app box — the overscroll
    band above and below on mobile, and the safe areas. It has to match the

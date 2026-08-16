@@ -18,7 +18,7 @@ function Peek({ state, dispatch }) {
       <div className="eyebrow">{t("peek")}</div>
       <div className="stage">
         <HoldCard name={player.name} numeral={roman(seat)} sigil={round.sigil}
-          word={face.word} note={face.note} />
+          word={face.word} note={face.note} title={face.title} special={face.special} />
         <p className="quiet" style={{ textAlign: "center", maxWidth: 270, fontSize: 12.5 }}>{t("peekWarn")}</p>
       </div>
       <Btn onClick={() => dispatch({ type: "PEEK_DONE" })}>{t("done")}</Btn>

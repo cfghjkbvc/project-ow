@@ -14,17 +14,27 @@ const CSS = FONT_CSS + `
   --f-fat:'Abril Fatface',Georgia,serif;
   --f-serif:'Bodoni Moda',Georgia,serif;
   --f-ui:'Jost',system-ui,sans-serif;
-  position:relative; min-height:100dvh; background:var(--teal); color:var(--bone);
+  position:relative; min-height:100svh; background:var(--teal); color:var(--bone);
   font-family:var(--f-ui); -webkit-font-smoothing:antialiased; overflow:hidden;
 }
 .ow *{box-sizing:border-box; margin:0;}
-.ow-frame{position:fixed; inset:8px; pointer-events:none; z-index:3; border:1px solid var(--hair);}
+/* Images must never offer the iOS copy/save sheet on a long press — the reveal
+   gesture IS a long press, so the two collide. pointer-events:none passes the
+   touch through to the card and the carousel underneath. */
+.ow img{-webkit-user-drag:none; user-select:none; -webkit-user-select:none;
+  -webkit-touch-callout:none; pointer-events:none;}
+/* svh, not dvh: dvh changes as the browser toolbar hides and shows, which
+   makes a fixed frame drift and lets content sit outside it. svh is the
+   smallest viewport and never moves. */
+.ow-frame{position:fixed; top:8px; left:8px; right:8px; height:calc(100svh - 16px);
+  pointer-events:none; z-index:3; border:1px solid var(--hair);}
 .ow-frame i{position:absolute; width:12px; height:12px; border:1px solid rgba(243,235,215,.45);}
 .ow-frame i:nth-child(1){top:-1px; left:-1px; border-right:0; border-bottom:0;}
 .ow-frame i:nth-child(2){top:-1px; right:-1px; border-left:0; border-bottom:0;}
 .ow-frame i:nth-child(3){bottom:-1px; left:-1px; border-right:0; border-top:0;}
 .ow-frame i:nth-child(4){bottom:-1px; right:-1px; border-left:0; border-top:0;}
-.ow-shell{position:relative; z-index:2; max-width:440px; margin:0 auto; min-height:100dvh;
+.ow-shell{position:relative; z-index:2; max-width:440px; margin:0 auto; min-height:100svh;
+  max-height:100svh;
   display:flex; flex-direction:column; padding:24px 22px calc(22px + env(safe-area-inset-bottom));}
 
 .ow .fat{font-family:var(--f-fat);}
@@ -95,7 +105,7 @@ const CSS = FONT_CSS + `
 
 .ow .stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:14px; perspective:1600px; padding:12px 0;}
-.ow .card-wrap{width:min(100%, 340px, calc(58dvh * 0.676)); container-type:inline-size;
+.ow .card-wrap{width:min(100%, 340px, calc(58svh * 0.676)); container-type:inline-size;
   animation:ow-deal .5s cubic-bezier(.16,.9,.3,1) both;}
 .ow .float{animation:ow-float 7s ease-in-out infinite;}
 .ow .card{width:100%; aspect-ratio:5/7.4; position:relative; transform-style:preserve-3d;
@@ -124,13 +134,24 @@ const CSS = FONT_CSS + `
   background:var(--bone); border:1px solid var(--ink); border-top:0; padding:3px 13px 4px;
   font-family:var(--f-serif); font-weight:800; font-size:13px; letter-spacing:.14em; color:var(--ink);}
 .ow .banner{width:100%; flex:1; background:var(--bone); padding:8px 4px 4px; text-align:center;
-  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;}
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;}
 .ow .banner .word{font-family:var(--f-fat); color:var(--ink); text-transform:uppercase;
   font-size:clamp(22px,8vw,34px); line-height:1; letter-spacing:.01em; word-break:break-word;}
 .ow .banner .word{font-size:clamp(21px,13.5cqw,40px);}
 .ow .banner .note{font-family:var(--f-ui); font-size:10px; line-height:1.4;
   color:rgba(23,18,14,.72); padding:0 6px;}
 .ow .banner .note{font-size:clamp(9px,3.6cqw,11px);}
+
+/* Same plate on every card so the layout never leaks which side you're on.
+   Special roles get the ink fill — unmissable up close, and still just a
+   cream card with black type from across the table. */
+.ow .roleplate{width:100%; border:1.5px solid var(--ink); padding:4px 6px 5px;
+  background:var(--bone); color:var(--ink);}
+.ow .roleplate-hot{background:var(--ink); color:var(--bone); border-color:var(--ink);}
+.ow .rp-title{font-family:var(--f-fat); text-transform:uppercase; letter-spacing:.05em;
+  font-size:clamp(11px,4.6cqw,15px); line-height:1.1;}
+.ow .rp-note{font-family:var(--f-ui); line-height:1.35; opacity:.82; margin-top:2px;
+  font-size:clamp(8.5px,3.4cqw,10.5px);}
 .ow .who{font-family:var(--f-serif); font-weight:600; font-size:10px; letter-spacing:.22em;
   text-transform:uppercase; color:rgba(23,18,14,.6); padding:3px 0 5px;}
 .ow .sheen{position:absolute; top:0; bottom:0; width:44%; z-index:3; pointer-events:none;
@@ -167,7 +188,7 @@ const CSS = FONT_CSS + `
 .ow .sheet{position:fixed; inset:0; background:rgba(9,20,22,.82); display:flex; z-index:30;
   align-items:flex-end; justify-content:center; padding:16px; animation:ow-fade .18s ease both;}
 .ow .sheet-in{width:100%; max-width:440px; background:var(--teal-l); border:2px solid var(--bone);
-  padding:22px; animation:ow-up .26s cubic-bezier(.2,.8,.3,1) both; max-height:88dvh; overflow-y:auto;}
+  padding:22px; animation:ow-up .26s cubic-bezier(.2,.8,.3,1) both; max-height:86svh; overflow-y:auto;}
 .ow .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:40;
   background:var(--bone); color:var(--ink); border:2px solid var(--ink); padding:11px 20px;
   font-size:12px; letter-spacing:.14em; text-transform:uppercase; animation:ow-up .2s ease both;}
@@ -191,7 +212,7 @@ const CSS = FONT_CSS + `
 @media (min-width:760px){
   .ow{display:flex; align-items:center; justify-content:center; padding:28px 0;}
   .ow-frame{display:none;}
-  .ow-shell{width:440px; min-height:0; height:min(900px, calc(100dvh - 56px));
+  .ow-shell{width:440px; min-height:0; max-height:none; height:min(900px, calc(100svh - 56px));
     background:var(--teal-d); border:1px solid var(--hair);
     box-shadow:0 28px 70px rgba(0,0,0,.5); padding:26px 24px;}
   .ow-shell::before,.ow-shell::after{content:''; position:absolute; width:13px; height:13px;

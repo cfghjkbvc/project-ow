@@ -22,7 +22,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm ci
+      # npm ci needs a committed package-lock.json that agrees with
+      # package.json, and fails outright otherwise. npm install works either
+      # way and still honours the lockfile when it is there.
+      - run: npm install --no-audit --no-fund
+      - run: npm test
       - run: npm run build
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

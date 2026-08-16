@@ -43,11 +43,10 @@ const ENABLE_SW = true;
 Add the manifest link to `index.html` inside `<head>`:
 
 ```html
-<link rel="manifest" href="/odd-word/manifest.webmanifest" />
+<link rel="manifest" href="./manifest.webmanifest" />
 ```
 
-Use your real `base` path. Getting this wrong is silent — the app still works,
-it just never installs.
+Keep it relative. An absolute path breaks the moment the repo is renamed.
 
 **Bump `VERSION` in `sw.js` on every deploy.** A service worker will happily
 serve last month's bundle forever otherwise, and you will lose an evening to it.

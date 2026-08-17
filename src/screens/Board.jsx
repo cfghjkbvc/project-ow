@@ -15,6 +15,15 @@ function Board({ state, dispatch }) {
   const order = round.speakOrder.map((id) => here.find((p) => p.id === id)).filter(Boolean);
   if (!order.length) return null;
 
+  /* The list is the deal circle, rotated so whoever opens sits at the top.
+     Eliminated players keep their place in the circle rather than being pulled
+     out, so the seating everyone memorised while the phone went round still
+     matches what's on screen. */
+  const startAt = round.dealOrder.indexOf(order[0].id);
+  const seats = [...round.dealOrder.slice(startAt), ...round.dealOrder.slice(0, startAt)]
+    .map((id) => here.find((p) => p.id === id))
+    .filter(Boolean);
+
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
@@ -35,7 +44,7 @@ function Board({ state, dispatch }) {
       <div className="eyebrow">{t("tapVote")}</div>
 
       <div className="scroll" style={{ display: "flex", flexDirection: "column", gap: 6, marginTop: 12, flex: 1 }}>
-        {here.map((p, i) => {
+        {seats.map((p, i) => {
           const dead = !round.alive.includes(p.id);
           const show = dead && (settings.revealOnVote || ["mrwhite", "jester"].includes(round.roles[p.id]));
           return (

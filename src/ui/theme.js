@@ -28,10 +28,16 @@ const CSS = FONT_CSS + `
 .ow input, .ow textarea{user-select:text; -webkit-user-select:text;}
 .ow img{-webkit-user-drag:none; user-select:none; -webkit-user-select:none;
   -webkit-touch-callout:none; pointer-events:none;}
-/* svh, not dvh: dvh changes as the browser toolbar hides and shows, which
-   makes a fixed frame drift and lets content sit outside it. svh is the
-   smallest viewport and never moves. */
-.ow-frame{position:fixed; top:8px; left:8px; right:8px; height:calc(100svh - 16px);
+/* Standalone mode has no browser chrome, so the app runs edge to edge and
+   content will sit under the Dynamic Island and the home indicator unless every
+   fixed or full-height box is inset. viewport-fit=cover buys the full-bleed
+   background; these insets buy back the readable area. env() is 0 everywhere
+   else, so this costs nothing in a browser tab or on desktop. */
+.ow-frame{position:fixed;
+  top:calc(8px + env(safe-area-inset-top));
+  left:calc(8px + env(safe-area-inset-left));
+  right:calc(8px + env(safe-area-inset-right));
+  height:calc(100svh - 16px - env(safe-area-inset-top) - env(safe-area-inset-bottom));
   pointer-events:none; z-index:3; border:1px solid var(--hair);}
 .ow-frame i{position:absolute; width:12px; height:12px; border:1px solid rgba(243,235,215,.45);}
 .ow-frame i:nth-child(1){top:-1px; left:-1px; border-right:0; border-bottom:0;}
@@ -40,7 +46,11 @@ const CSS = FONT_CSS + `
 .ow-frame i:nth-child(4){bottom:-1px; right:-1px; border-left:0; border-top:0;}
 .ow-shell{position:relative; z-index:2; max-width:440px; margin:0 auto; min-height:100svh;
   max-height:100svh;
-  display:flex; flex-direction:column; padding:24px 22px calc(22px + env(safe-area-inset-bottom));}
+  display:flex; flex-direction:column;
+  padding-top:calc(24px + env(safe-area-inset-top));
+  padding-right:calc(22px + env(safe-area-inset-right));
+  padding-bottom:calc(22px + env(safe-area-inset-bottom));
+  padding-left:calc(22px + env(safe-area-inset-left));}
 
 .ow .fat{font-family:var(--f-fat);}
 .ow .serif{font-family:var(--f-serif); font-weight:600;}
@@ -259,10 +269,13 @@ const CSS = FONT_CSS + `
   text-transform:uppercase; letter-spacing:.02em;}
 
 .ow .sheet{position:fixed; inset:0; background:rgba(9,20,22,.82); display:flex; z-index:30;
-  align-items:flex-end; justify-content:center; padding:16px; animation:ow-fade .18s ease both;}
+  align-items:flex-end; justify-content:center; animation:ow-fade .18s ease both;
+  padding:calc(16px + env(safe-area-inset-top)) calc(16px + env(safe-area-inset-right))
+          calc(16px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left));}
 .ow .sheet-in{width:100%; max-width:440px; background:var(--teal-l); border:2px solid var(--bone);
   padding:22px; animation:ow-up .26s cubic-bezier(.2,.8,.3,1) both; max-height:86svh; overflow-y:auto;}
-.ow .toast{position:fixed; left:50%; bottom:26px; transform:translateX(-50%); z-index:40;
+.ow .toast{position:fixed; left:50%; bottom:calc(26px + env(safe-area-inset-bottom));
+  transform:translateX(-50%); z-index:40;
   background:var(--bone); color:var(--ink); border:2px solid var(--ink); padding:11px 20px;
   font-size:12px; letter-spacing:.14em; text-transform:uppercase; animation:ow-up .2s ease both;}
 
@@ -277,7 +290,10 @@ const CSS = FONT_CSS + `
 @keyframes ow-fade{from{opacity:0;} to{opacity:1;}}
 @keyframes ow-up{from{opacity:0; transform:translateY(22px);} to{opacity:1; transform:none;}}
 @media (max-height:700px){
-  .ow-shell{padding:14px 18px calc(14px + env(safe-area-inset-bottom));}
+  .ow-shell{padding-top:calc(14px + env(safe-area-inset-top));
+    padding-right:calc(18px + env(safe-area-inset-right));
+    padding-bottom:calc(14px + env(safe-area-inset-bottom));
+    padding-left:calc(18px + env(safe-area-inset-left));}
   .ow .stage{gap:10px; padding:6px 0;}
   .ow .btn{padding:13px 34px;}
 }

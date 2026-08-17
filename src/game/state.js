@@ -54,13 +54,17 @@ function assignRoles(players, settings) {
   return { roles, accompliceOf };
 }
 
-function speakingOrder(alive, roles) {
-  const o = shuffle(alive);
-  if (o.length > 1 && roles[o[0]] === "mrwhite") {
-    const j = 1 + Math.floor(Math.random() * (o.length - 1));
-    [o[0], o[j]] = [o[j], o[0]];
-  }
-  return o;
+/* The phone physically travels in dealOrder, so the speaking order has to be
+   that same circle — just rotated to whoever opens. Reshuffling it meant the
+   table was asked to speak in an order that had nothing to do with where
+   anyone was sitting. Mr White never opens: with no word and no information,
+   going first is close to an instant loss. */
+function speakingOrder(dealOrder, alive, roles) {
+  const seq = dealOrder.filter((id) => alive.includes(id));
+  if (seq.length < 2) return seq;
+  let start = Math.floor(Math.random() * seq.length);
+  if (roles[seq[start]] === "mrwhite") start = (start + 1) % seq.length;
+  return [...seq.slice(start), ...seq.slice(0, start)];
 }
 
 function dealRound(state) {
@@ -75,6 +79,7 @@ function dealRound(state) {
   const flip = Math.random() < 0.5;
   const { roles, accompliceOf } = assignRoles(players, state.settings);
   const alive = players.map((p) => p.id);
+  const dealOrder = shuffle(alive);
   const sigilCount = SIGIL_ART ? SIGIL_ART.length : SIGILS.length;
 
   return {
@@ -85,8 +90,8 @@ function dealRound(state) {
       civWord: flip ? pair.a : pair.b, ucWord: flip ? pair.b : pair.a,
       roles, accompliceOf, alive,
       sigil: Math.floor(Math.random() * sigilCount),
-      dealOrder: shuffle(alive), dealIndex: 0,
-      speakOrder: speakingOrder(alive, roles), skips: 0, peeks: {},
+      dealOrder, dealIndex: 0,
+      speakOrder: speakingOrder(dealOrder, alive, roles), skips: 0, peeks: {},
     },
   };
 }
@@ -195,7 +200,7 @@ function reducer(state, action) {
     case "SKIP_VOTE":
       return { ...state, past: pushPast(state),
         round: { ...state.round, skips: state.round.skips + 1,
-          speakOrder: speakingOrder(state.round.alive, state.round.roles) } };
+          speakOrder: speakingOrder(state.round.dealOrder, state.round.alive, state.round.roles) } };
     case "UNDO": {
       if (!state.past.length) return state;
       const prev = state.past[state.past.length - 1];
@@ -205,7 +210,7 @@ function reducer(state, action) {
       const { round } = state;
       const role = round.roles[action.id];
       const alive = round.alive.filter((id) => id !== action.id);
-      const next = { ...round, alive, speakOrder: speakingOrder(alive, round.roles) };
+      const next = { ...round, alive, speakOrder: speakingOrder(round.dealOrder, alive, round.roles) };
       const name = state.players.find((p) => p.id === action.id).name;
       const past = pushPast(state);
       if (role === "jester")

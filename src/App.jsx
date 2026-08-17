@@ -13,6 +13,8 @@ import Settings from "./screens/Settings.jsx";
 import Rules from "./screens/Rules.jsx";
 import Night from "./screens/Night.jsx";
 import Final from "./screens/Final.jsx";
+import Share from "./screens/Share.jsx";
+import About from "./screens/About.jsx";
 import { Packs, Editor } from "./screens/Packs.jsx";
 import { Deal } from "./screens/Deal.jsx";
 import Peek from "./screens/Peek.jsx";
@@ -25,7 +27,8 @@ import End from "./screens/End.jsx";
 
 const HEADING = {
   home: "title", seats: "whoIsHere", settings: "settings", rules: "rulesTitle",
-  night: "theNight", final: "nightOver", packs: "packs", editor: "packName",
+  night: "theNight", final: "nightOver", share: "shareGame", about: "about",
+  packs: "packs", editor: "packName",
   deal: "dealing", peek: "peek", board: "tapVote", result: "votedOut",
   guess: "whiteOne", guessResult: "whiteGuessed", end: "whoWas",
 };
@@ -80,6 +83,8 @@ export default function OddWord() {
     rules: <Rules dispatch={dispatch} />,
     night: <Night state={state} dispatch={dispatch} />,
     final: <Final state={state} dispatch={dispatch} />,
+    share: <Share dispatch={dispatch} />,
+    about: <About state={state} dispatch={dispatch} />,
     packs: <Packs state={state} dispatch={dispatch} />,
     editor: <Editor state={state} dispatch={dispatch} />,
     deal: <Deal state={state} dispatch={dispatch} />,

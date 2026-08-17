@@ -11,6 +11,8 @@
 
 export const BASE = import.meta.env.BASE_URL;
 export const ART = (f) => BASE + "art/" + f;
+export const VERSION = "0.1.0";
+
 export const ENABLE_SW = true; // public/sw.js precaches the shell for offline play
 
 export const SIGIL_ART = Array.from({ length: 6 }, (_, i) =>

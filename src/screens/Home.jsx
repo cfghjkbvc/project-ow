@@ -49,6 +49,8 @@ function Home({ state, dispatch }) {
       <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "rules" })}>{t("howTo")}</Btn>
       <div style={{ height: 9 }} />
       <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "settings" })}>{t("settings")}</Btn>
+      <div style={{ height: 9 }} />
+      <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "share" })}>{t("shareGame")}</Btn>
 
       {live && (
         <>

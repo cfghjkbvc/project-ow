@@ -83,6 +83,10 @@ const CSS = FONT_CSS + `
   box-shadow:inset 0 0 0 3px var(--vermilion), inset 0 0 0 4px var(--bone);}
 .ow .btn-sm{padding:11px 26px; font-size:11px; letter-spacing:.16em;}
 .ow :focus-visible{outline:2px solid var(--marigold); outline-offset:3px;}
+/* The shell is focused programmatically on every phase change so screen readers
+   announce the new screen. It is not interactive, and the ring was showing as a
+   gold line down both sides on load. */
+.ow-shell:focus,.ow-shell:focus-visible{outline:none;}
 
 .ow .row{display:flex; align-items:center; gap:12px; padding:12px 14px; border-radius:0;
   background:var(--teal-l); border:1px solid var(--hair); width:100%; text-align:left;}
@@ -199,6 +203,12 @@ const CSS = FONT_CSS + `
 .ow .reveal-img{display:block; width:238px; height:auto; padding:0; border:0; border-radius:6px;
   box-shadow:0 14px 32px rgba(0,0,0,.45); animation:ow-turn .55s cubic-bezier(.2,.8,.3,1) both;}
 
+/* QR, presented as a card like everything else. */
+.ow .qrcard{background:var(--bone); border:2px solid var(--ink); padding:10px;
+  box-shadow:0 14px 32px rgba(0,0,0,.45); width:min(250px, 58vw);
+  animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
+.ow .qr{display:block; width:100%; height:auto;}
+
 /* The home card: the deal card's back, at rest, carrying the wordmark. */
 .ow .homecard{position:relative; width:min(100%, 300px, calc(46svh * 0.676)); margin:8px auto 0;
   aspect-ratio:5/7.4; background:var(--bone); border:2px solid var(--ink); padding:9px;
@@ -230,10 +240,13 @@ const CSS = FONT_CSS + `
    silently overridden and the card only ever cross-faded. Perspective has to
    move onto the wrapper too, since it only applies to direct children. */
 .ow .turnwrap{perspective:1200px; animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
-.ow .turn{position:relative; width:min(236px, calc(46svh * 0.63)); aspect-ratio:560/886;
+.ow .turn{position:relative; width:min(236px, calc(46svh * 0.63));
   transform-style:preserve-3d; will-change:transform;
   transition:transform .55s cubic-bezier(.45,.05,.55,.95);}
 .ow .turn[data-open="1"]{transform:rotateY(180deg);}
+/* Only the line-art fallback needs a declared ratio; real art brings its own. */
+.ow .turn[data-art="0"]{aspect-ratio:560/886;}
+.ow .turn .sizer{display:block; width:100%; height:auto; visibility:hidden; pointer-events:none;}
 .ow .tface{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
   overflow:hidden; border-radius:5px; background:var(--bone); border:2px solid var(--ink);
   box-shadow:0 16px 34px rgba(0,0,0,.5); transition:opacity 0s linear .28s;}

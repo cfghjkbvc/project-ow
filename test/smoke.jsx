@@ -9,6 +9,8 @@ import SettingsScreen from "../src/screens/Settings.jsx";
 import Rules from "../src/screens/Rules.jsx";
 import Night from "../src/screens/Night.jsx";
 import Final from "../src/screens/Final.jsx";
+import Share from "../src/screens/Share.jsx";
+import About from "../src/screens/About.jsx";
 import { Packs, Editor } from "../src/screens/Packs.jsx";
 import { Deal } from "../src/screens/Deal.jsx";
 import Peek from "../src/screens/Peek.jsx";
@@ -18,7 +20,7 @@ import { Guess, GuessResult } from "../src/screens/Guess.jsx";
 import End from "../src/screens/End.jsx";
 
 const SCREEN = { home: Home, seats: Seats, settings: SettingsScreen, rules: Rules,
-  night: Night, final: Final, packs: Packs, editor: Editor,
+  night: Night, final: Final, share: Share, about: About, packs: Packs, editor: Editor,
   deal: Deal, peek: Peek, board: Board, result: Result, guess: Guess, guessResult: GuessResult, end: End };
 
 const noop = () => {};
@@ -57,6 +59,20 @@ for (const lang of ["en", "hu"]) {
   check(lang + " rules renders", () => draw({ ...s, phase: "rules" }, "rules"));
   check(lang + " night renders", () => draw({ ...s, phase: "night" }, "night"));
   check(lang + " packs renders", () => draw({ ...s, phase: "packs" }, "packs"));
+  check(lang + " about renders", () => draw({ ...s, phase: "about" }, "about"));
+  check(lang + " share renders a real QR", () => {
+    const html = draw({ ...s, phase: "share" }, "share");
+    const m = /<path d="([^"]*)"/.exec(html.slice(html.indexOf("qr")));
+    if (!m) throw new Error("no QR path emitted");
+    const modules = (m[1].match(/M/g) || []).length;
+    if (modules < 200) throw new Error("QR looks empty: " + modules + " modules");
+  });
+  check(lang + " wipe clears everything but keeps language", () => {
+    const w = reducer({ ...s, phase: "about" }, { type: "WIPE_ALL" });
+    if (w.players.length || w.packs.length || w.history.length) throw new Error("not wiped");
+    if (w.settings.ui !== lang) throw new Error("language should survive a wipe");
+    if (w.phase !== "home") throw new Error("should land on home");
+  });
 
   check(lang + " dealing starts a session", () => {
     if (s.session.active) throw new Error("session active before dealing");

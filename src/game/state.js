@@ -285,6 +285,12 @@ function reducer(state, action) {
         history: logRound(state, state.round, winner), result: { ...state.result, winner } };
       return { ...state, phase: "board", result: null, guess: null };
     }
+    // Everything, including the roster and custom packs. The only full reset
+    // in the app, and it lives behind a confirm on the About screen.
+    case "WIPE_ALL": {
+      try { store.set(KEY, {}); } catch (_) {}
+      return { ...makeInitial(), settings: { ...makeInitial().settings, ui: state.settings.ui } };
+    }
     case "TO_HOME": return { ...state, phase: "home", round: null, result: null, guess: null, past: [] };
     default: return state;
   }

@@ -23,6 +23,7 @@ function RoleFace({ role }) {
    card out of nothing was the least card-like moment in the app. */
 function RoleTurn({ role, sealed }) {
   const [open, setOpen] = useState(false);
+  const art = !sealed && ROLE_ART?.[role];
   useEffect(() => {
     if (sealed) return;
     const id = setTimeout(() => setOpen(true), 560);
@@ -31,7 +32,11 @@ function RoleTurn({ role, sealed }) {
 
   return (
     <div className="turnwrap">
-      <div className="turn" data-open={open ? "1" : "0"}>
+      <div className="turn" data-open={open ? "1" : "0"} data-art={art ? "1" : "0"}>
+        {/* An invisible copy of the art in normal flow gives .turn its height, so
+            the card takes the image's own proportions instead of a hardcoded
+            ratio. Same behaviour as the carousel, which was already right. */}
+        {art && <img className="sizer" src={art} alt="" aria-hidden="true" />}
         <div className="tface tback"><Lattice /></div>
         <div className="tface tfront">
           {sealed ? <div className="turn-fallback"><div className="pane" /><div className="cap">{t("sealed")}</div></div>

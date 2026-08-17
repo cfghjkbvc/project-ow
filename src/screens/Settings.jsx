@@ -94,6 +94,10 @@ function Settings({ state, dispatch }) {
         ) : (
           <p className="quiet" style={{ marginTop: 9, paddingBottom: 8 }}>{t("hapticsUnsupported")}</p>
         )}
+
+        <div className="rule-dbl" />
+        <button className="eyebrow tap" style={{ paddingBottom: 6 }}
+          onClick={() => dispatch({ type: "GOTO", phase: "about" })}>{t("about")}</button>
       </div>
 
       <div style={{ marginTop: 14 }}>

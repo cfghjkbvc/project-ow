@@ -57,17 +57,22 @@ function assignRoles(players, settings) {
   return { roles, accompliceOf };
 }
 
-/* The phone physically travels in dealOrder, so the speaking order has to be
-   that same circle — just rotated to whoever opens. Reshuffling it meant the
-   table was asked to speak in an order that had nothing to do with where
-   anyone was sitting. Mr White never opens: with no word and no information,
-   going first is close to an instant loss. */
-function speakingOrder(dealOrder, alive, roles) {
-  const seq = dealOrder.filter((id) => alive.includes(id));
-  if (seq.length < 2) return seq;
-  let start = Math.floor(Math.random() * seq.length);
-  if (roles[seq[start]] === "mrwhite") start = (start + 1) % seq.length;
-  return [...seq.slice(start), ...seq.slice(0, start)];
+/* Seats are fixed for the whole round: dealOrder defines seat I to N, the card
+   numerals match, and the board lists them in that order. What moves is the
+   opener — a token that advances to the next living seat after every vote,
+   exactly like passing it round a real table.
+
+   There is deliberately no Mr White guard here. With a deterministic rotation,
+   skipping them would be observable: if the opener jumps from III to IV,
+   everyone knows III is Mr White. Seat I is covered instead, by never dealing
+   Mr White the first card. */
+function nextOpener(dealOrder, alive, current) {
+  const i = dealOrder.indexOf(current);
+  for (let k = 1; k <= dealOrder.length; k++) {
+    const id = dealOrder[(i + k) % dealOrder.length];
+    if (alive.includes(id)) return id;
+  }
+  return alive[0];
 }
 
 function dealRound(state) {
@@ -101,15 +106,27 @@ function dealRound(state) {
       roles, accompliceOf, alive,
       sigil: Math.floor(Math.random() * sigilCount),
       dealOrder, dealIndex: 0,
-      speakOrder: speakingOrder(dealOrder, alive, roles), skips: 0, peeks: {},
+      opener: dealOrder[0], skips: 0, peeks: {},
     },
   };
 }
 
+/* Mr White is a third party, not an impostor. Counting them as both — an
+   impostor for parity and a solo role for winning — is what produced states
+   like "The Strangers take it" with no impostors left alive.
+
+   Parity counts undercovers against everyone else. Mr White has their own
+   parity: alone against one civilian, nobody can be reliably voted out, so
+   Mr White takes it without needing to guess. */
 function evaluate(round) {
-  const threats = round.alive.filter((id) => ["undercover", "mrwhite"].includes(round.roles[id])).length;
-  if (threats === 0) return "civilians";
-  if (threats >= round.alive.length - threats) return "impostors";
+  const roleOf = (id) => round.roles[id];
+  const uc = round.alive.filter((id) => roleOf(id) === "undercover").length;
+  const white = round.alive.filter((id) => roleOf(id) === "mrwhite").length;
+  const others = round.alive.length - uc - white;
+
+  if (uc === 0 && white === 0) return "civilians";
+  if (uc > 0 && uc >= others + white) return "impostors";
+  if (uc === 0 && white >= others) return "mrwhite";
   return null;
 }
 
@@ -119,8 +136,10 @@ function award(state, winner) {
   const add = (id, n) => (scores[id] = (scores[id] || 0) + n);
   seated(state).forEach((p) => {
     const r = round.roles[p.id];
-    if (winner === "civilians" && (r === "civilian" || r === "jester")) add(p.id, POINTS.civilian);
-    if (winner === "impostors" && (r === "undercover" || r === "mrwhite")) add(p.id, POINTS[r]);
+    // Only civilians score a civilian win. The Jester and Mr White are neutral
+    // roles — they score on their own win or not at all.
+    if (winner === "civilians" && r === "civilian") add(p.id, POINTS.civilian);
+    if (winner === "impostors" && r === "undercover") add(p.id, POINTS.undercover);
     // The Accomplice has to be alive at the end. Without a failure state the
     // role scored for doing nothing, which is why it felt weightless.
     if (winner === "impostors" && r === "accomplice" && round.alive.includes(p.id)) add(p.id, POINTS.accomplice);
@@ -225,7 +244,7 @@ function reducer(state, action) {
     case "SKIP_VOTE":
       return { ...state, past: pushPast(state),
         round: { ...state.round, skips: state.round.skips + 1,
-          speakOrder: speakingOrder(state.round.dealOrder, state.round.alive, state.round.roles) } };
+          opener: nextOpener(state.round.dealOrder, state.round.alive, state.round.opener) } };
     case "UNDO": {
       if (!state.past.length) return state;
       const prev = state.past[state.past.length - 1];
@@ -235,7 +254,7 @@ function reducer(state, action) {
       const { round } = state;
       const role = round.roles[action.id];
       const alive = round.alive.filter((id) => id !== action.id);
-      const next = { ...round, alive, speakOrder: speakingOrder(round.dealOrder, alive, round.roles) };
+      const next = { ...round, alive, opener: nextOpener(round.dealOrder, alive, round.opener) };
       const name = state.players.find((p) => p.id === action.id).name;
       const past = pushPast(state);
       if (role === "jester")

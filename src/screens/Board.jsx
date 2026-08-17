@@ -12,17 +12,12 @@ function Board({ state, dispatch }) {
   const [ending, setEnding] = useState(false);
   const [peeking, setPeeking] = useState(false);
   const here = seated(state);
-  const order = round.speakOrder.map((id) => here.find((p) => p.id === id)).filter(Boolean);
-  if (!order.length) return null;
 
-  /* The list is the deal circle, rotated so whoever opens sits at the top.
-     Eliminated players keep their place in the circle rather than being pulled
-     out, so the seating everyone memorised while the phone went round still
-     matches what's on screen. */
-  const startAt = round.dealOrder.indexOf(order[0].id);
-  const seats = [...round.dealOrder.slice(startAt), ...round.dealOrder.slice(0, startAt)]
-    .map((id) => here.find((p) => p.id === id))
-    .filter(Boolean);
+  /* Seat order, never rotated: the numeral on a row always matches the numeral
+     that was on that player's card. The opener moves instead — it is the chip,
+     not the sort order. */
+  const seats = round.dealOrder.map((id) => here.find((p) => p.id === id)).filter(Boolean);
+  if (!seats.length) return null;
 
   return (
     <>
@@ -54,10 +49,10 @@ function Board({ state, dispatch }) {
               {dead && <Lattice scale="row" />}
               <span className="num">{roman(i + 1)}</span>
               <span className="nm">{p.name}</span>
-              {!dead && p.id === order[0].id && (
+              {!dead && p.id === round.opener && (
                 <span className="starts">{t("startsHere")}</span>
               )}
-              {!dead && p.id !== order[0].id && !!(round.peeks || {})[p.id] && (
+              {!dead && p.id !== round.opener && !!(round.peeks || {})[p.id] && (
                 <span className="quiet" style={{ marginLeft: "auto", fontSize: 11 }}>
                   {t("peekedN", round.peeks[p.id])}
                 </span>

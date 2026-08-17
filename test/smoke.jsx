@@ -142,6 +142,50 @@ for (const lang of ["en", "hu"]) {
     if (!f.players.length) throw new Error("players must survive the night");
   });
 
+  check(lang + " seats never rotate, opener advances", () => {
+    let g = { ...s, session: { active: true } };
+    g = reducer(g, { type: "DEAL" });
+    const seats = g.round.dealOrder.join();
+    if (g.round.opener !== g.round.dealOrder[0]) throw new Error("seat I should open round one");
+    while (g.phase === "deal") g = reducer(g, { type: "NEXT_CARD" });
+    const before = g.round.opener;
+    g = reducer(g, { type: "SKIP_VOTE" });
+    if (g.round.dealOrder.join() !== seats) throw new Error("seat order changed");
+    if (g.round.opener === before) throw new Error("opener did not advance");
+    const i = g.round.dealOrder.indexOf(before);
+    if (g.round.opener !== g.round.dealOrder[(i + 1) % g.round.dealOrder.length])
+      throw new Error("opener did not advance to the next seat");
+  });
+
+  check(lang + " Jester scores only when voted out", () => {
+    let g = makeInitial();
+    g = { ...g, settings: { ...g.settings, ui: lang, preset: "wild", impostors: 1 } };
+    ["A","B","C","D","E","F","G","H"].forEach((n) => { g = reducer(g, { type: "ADD_PLAYER", name: n }); });
+    let found = false;
+    for (let n = 0; n < 80 && !found; n++) {
+      let r = reducer({ ...g, session: { active: false } }, { type: "DEAL" });
+      const jest = Object.keys(r.round.roles).find((k) => r.round.roles[k] === "jester");
+      if (!jest) continue;
+      found = true;
+      while (r.phase === "deal") r = reducer(r, { type: "NEXT_CARD" });
+      // drive to a civilian win and check the Jester banked nothing
+      let guard = 0;
+      while (r.phase !== "end" && guard++ < 40) {
+        if (r.phase === "board") {
+          const target = r.round.alive.find((id) => ["undercover", "mrwhite"].includes(r.round.roles[id]))
+            ?? r.round.alive.find((id) => id !== jest);
+          r = reducer(r, { type: "ELIMINATE", id: target });
+        } else if (r.phase === "result") r = reducer(r, { type: "CONTINUE" });
+        else if (r.phase === "guess") r = reducer(r, { type: "SUBMIT_GUESS", text: "zzz" });
+        else if (r.phase === "guessResult") r = reducer(r, { type: "JUDGE_GUESS", correct: false });
+        else break;
+      }
+      if (r.result.winner === "civilians" && (r.scores[jest] || 0) !== 0)
+        throw new Error("Jester scored " + r.scores[jest] + " on a civilian win");
+    }
+    if (!found) throw new Error("no jester appeared in 80 wild rounds");
+  });
+
   check(lang + " Mr White is never dealt first", () => {
     let bad = 0;
     for (let n = 0; n < 300; n++) {

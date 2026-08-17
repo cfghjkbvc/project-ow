@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="Game screen UI overhaul" />
+    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="Game screen UI" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -121,7 +121,7 @@
       <workItem from="1786903685110" duration="4086000" />
       <workItem from="1786908523092" duration="3976000" />
       <workItem from="1786959291026" duration="5682000" />
-      <workItem from="1786977142816" duration="397000" />
+      <workItem from="1786977142816" duration="1038000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -243,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1786977529835</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Game screen UI">
+      <option name="closed" value="true" />
+      <created>1786977744725</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1786977744725</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -272,7 +280,8 @@
     <MESSAGE value="Role explanation overhaul" />
     <MESSAGE value="Player order and webapp configuration" />
     <MESSAGE value="Game screen UI overhaul" />
-    <option name="LAST_COMMIT_MESSAGE" value="Game screen UI overhaul" />
+    <MESSAGE value="Game screen UI" />
+    <option name="LAST_COMMIT_MESSAGE" value="Game screen UI" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/odd_word$prep_art.coverage" NAME="prep_art Coverage Results" MODIFIED="1786906252005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

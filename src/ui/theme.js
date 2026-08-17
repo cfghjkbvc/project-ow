@@ -230,7 +230,7 @@ const CSS = FONT_CSS + `
    silently overridden and the card only ever cross-faded. Perspective has to
    move onto the wrapper too, since it only applies to direct children. */
 .ow .turnwrap{perspective:1200px; animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
-.ow .turn{position:relative; width:min(236px, calc(46svh * 0.63)); aspect-ratio:5/7.9;
+.ow .turn{position:relative; width:min(236px, calc(46svh * 0.63)); aspect-ratio:560/886;
   transform-style:preserve-3d; will-change:transform;
   transition:transform .55s cubic-bezier(.45,.05,.55,.95);}
 .ow .turn[data-open="1"]{transform:rotateY(180deg);}
@@ -239,14 +239,17 @@ const CSS = FONT_CSS + `
   box-shadow:0 16px 34px rgba(0,0,0,.5); transition:opacity 0s linear .28s;}
 .ow .tback{transform:translateZ(1px); padding:8px; display:flex;}
 .ow .tback .lattice{position:relative; flex:1; border:1px solid var(--ink);}
-.ow .tfront{transform:rotateY(180deg) translateZ(1px); border:0; background:none;}
+.ow .tfront{transform:rotateY(180deg) translateZ(1px); border:0; background:var(--bone);}
 .ow .turn[data-open="0"] .tfront{opacity:0;}
 .ow .turn[data-open="1"] .tback{opacity:0;}
-.ow .turn-img{display:block; width:100%; height:100%; object-fit:cover; border-radius:4px;}
+/* contain, not cover: the generated cards already carry their own cream
+   border, so cropping eats the frame. The ratio matches the exports
+   (560x886) so there is nothing to letterbox. */
+.ow .turn-img{display:block; width:100%; height:100%; object-fit:contain; border-radius:4px;}
 .ow .turn-static{width:100%;}
 .ow .turn-static img{display:block; width:100%; height:auto; border-radius:5px;
   box-shadow:0 12px 26px rgba(0,0,0,.45);}
-.ow .turn-static .turn-fallback{height:auto; aspect-ratio:5/7.9;
+.ow .turn-static .turn-fallback{height:auto; aspect-ratio:560/886;
   box-shadow:0 12px 26px rgba(0,0,0,.45);}
 .ow .turn-fallback{width:100%; height:100%; background:var(--bone); border:2px solid var(--ink);
   border-radius:5px; padding:8px; display:flex; flex-direction:column;}

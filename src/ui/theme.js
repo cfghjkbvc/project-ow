@@ -160,8 +160,12 @@ const CSS = FONT_CSS + `
 .ow .banner{width:100%; flex:1; background:var(--bone); padding:8px 4px 4px; text-align:center;
   display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;}
 .ow .banner .word{font-family:var(--f-fat); color:var(--ink); text-transform:uppercase;
-  font-size:clamp(22px,8vw,34px); line-height:1; letter-spacing:.01em; word-break:break-word;}
+  font-size:clamp(22px,8vw,34px); line-height:1; letter-spacing:.01em; overflow-wrap:anywhere;}
 .ow .banner .word{font-size:clamp(21px,13.5cqw,40px);}
+/* Long single words step down rather than breaking mid-word across the banner.
+   Custom packs will contain worse than Keresztrejtvény sooner or later. */
+.ow .banner .word[data-len="l"]{font-size:clamp(19px,10.4cqw,31px);}
+.ow .banner .word[data-len="xl"]{font-size:clamp(16px,8cqw,24px);}
 .ow .banner .note{font-family:var(--f-ui); font-size:10px; line-height:1.4;
   color:rgba(23,18,14,.72); padding:0 6px;}
 .ow .banner .note{font-size:clamp(9px,3.6cqw,11px);}
@@ -195,6 +199,15 @@ const CSS = FONT_CSS + `
 .ow .reveal-img{display:block; width:238px; height:auto; padding:0; border:0; border-radius:6px;
   box-shadow:0 14px 32px rgba(0,0,0,.45); animation:ow-turn .55s cubic-bezier(.2,.8,.3,1) both;}
 
+/* The home card: the deal card's back, at rest, carrying the wordmark. */
+.ow .homecard{position:relative; width:min(100%, 300px, calc(46svh * 0.676)); margin:8px auto 0;
+  aspect-ratio:5/7.4; background:var(--bone); border:2px solid var(--ink); padding:9px;
+  display:flex; box-shadow:0 16px 38px rgba(0,0,0,.5);
+  animation:ow-rise-in .5s cubic-bezier(.2,.75,.3,1) both;}
+.ow .homecard .panel{position:absolute; inset:9px; aspect-ratio:auto; width:auto;}
+.ow .homecard .stamp{position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+  z-index:1; background:var(--bone); border:1px solid var(--ink); padding:14px 20px; text-align:center;}
+
 /* Role carousel. Native scroll-snap, with the track padded by half a card so
    the first and last can actually reach the centre. */
 .ow .carou{display:flex; gap:14px; margin-top:14px; overflow-x:auto; overscroll-behavior-x:contain;
@@ -206,7 +219,8 @@ const CSS = FONT_CSS + `
 .ow .carou .dot{width:8px; height:8px; padding:0; transform:rotate(45deg);}
 .ow .mini{flex:1; background:var(--bone); border:2px solid var(--ink); padding:9px 8px 7px; text-align:center;}
 .ow .mini .k{font-family:var(--f-ui); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:rgba(23,18,14,.6);}
-.ow .mini .v{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink); font-size:19px; margin-top:4px;}
+.ow .mini .v{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink); font-size:19px;
+  margin-top:4px; overflow-wrap:anywhere; hyphens:auto;}
 
 /* The public role card, turned rather than faded in.
 

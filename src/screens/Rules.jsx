@@ -87,7 +87,7 @@ function Rules({ dispatch }) {
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span className="eyebrow">{t("rulesTitle")}</span>
-        <button className="eyebrow tap" onClick={() => dispatch({ type: "GOTO", phase: "setup" })}>{t("close")}</button>
+        <button className="eyebrow tap" onClick={() => dispatch({ type: "GOTO", phase: "home" })}>{t("close")}</button>
       </div>
 
       <div className="scroll" style={{ flex: 1, paddingTop: 18 }}>
@@ -125,7 +125,7 @@ function Rules({ dispatch }) {
       </div>
 
       <div style={{ marginTop: 12 }}>
-        <Btn onClick={() => dispatch({ type: "GOTO", phase: "setup" })}>{t("close")}</Btn>
+        <Btn onClick={() => dispatch({ type: "GOTO", phase: "home" })}>{t("close")}</Btn>
       </div>
     </>
   );

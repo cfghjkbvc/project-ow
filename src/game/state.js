@@ -22,16 +22,19 @@ function makeInitial() {
   // sim was 1-5 in v1 packs; the 5 band is gone, so clamp on read.
   const packs = (saved.packs || []).map((p) => ({ ...p, pairs: (p.pairs || []).map((x) => ({ ...x, sim: Math.min(4, x.sim || 3) })) }));
   return {
-    phase: "setup",
-    players: saved.players?.length ? saved.players : [
-      { id: uid(), name: "Anna", in: true }, { id: uid(), name: "Bence", in: true },
-      { id: uid(), name: "Csaba", in: true }, { id: uid(), name: "Dóra", in: true }],
+    phase: "home",
+    // No placeholder roster. Example names on a fresh install read as unfinished.
+    players: saved.players || [],
     settings: {
       impostors: 1, gap: "mixed", preset: "white", revealOnVote: true, haptics: true,
       ui: guess, active: [guess === "hu" ? "core-hu" : "core-en"],
       ...(saved.settings || {}),
     },
-    packs, retired: saved.retired || [], scores: saved.scores || {}, history: saved.history || [],
+    packs, retired: saved.retired || [],
+    // A night you start and finish. Scores, history and used pairs belong to
+    // the session; packs and retired pairs are deck preferences and outlive it.
+    session: saved.session || { active: false },
+    scores: saved.scores || {}, history: saved.history || [],
     editingId: null, peekId: null, usedPairs: [], roundNo: 0, round: null, result: null, guess: null, past: [],
   };
 }
@@ -79,7 +82,14 @@ function dealRound(state) {
   const flip = Math.random() < 0.5;
   const { roles, accompliceOf } = assignRoles(players, state.settings);
   const alive = players.map((p) => p.id);
+  // Mr White must not be dealt first. Whoever gets card one sets the pace of
+  // the pass-around, and Mr White stops to read a longer plate and think —
+  // that pause on card one is a tell from timing alone.
   const dealOrder = shuffle(alive);
+  if (dealOrder.length > 1 && roles[dealOrder[0]] === "mrwhite") {
+    const j = 1 + Math.floor(Math.random() * (dealOrder.length - 1));
+    [dealOrder[0], dealOrder[j]] = [dealOrder[j], dealOrder[0]];
+  }
   const sigilCount = SIGIL_ART ? SIGIL_ART.length : SIGILS.length;
 
   return {
@@ -178,7 +188,22 @@ function reducer(state, action) {
     case "RESTORE_ALL": return { ...state, retired: [] };
     case "GOTO": return { ...state, phase: action.phase };
     case "RESET_SCORES": return { ...state, scores: {}, history: [] };
-    case "DEAL": return dealRound(state);
+    case "TOGGLE_ALL_SEATS":
+      return { ...state, players: state.players.map((p) => ({ ...p, in: action.value })) };
+    case "DEAL": {
+      // Dealing is what starts a night, so the counters reset here rather than
+      // needing a separate "new game" step the player has to remember.
+      const fresh = state.session.active
+        ? state
+        : { ...state, session: { active: true, startedAt: Date.now() },
+            scores: {}, history: [], usedPairs: [], roundNo: 0 };
+      return dealRound(fresh);
+    }
+    case "FINISH_NIGHT": return { ...state, phase: "final" };
+    case "CLOSE_NIGHT":
+      return { ...state, phase: "home", session: { active: false },
+        scores: {}, history: [], usedPairs: [], roundNo: 0,
+        round: null, result: null, guess: null, past: [] };
     // Same as DEAL, but the round number does not advance — the thrown-away
     // pair stays in usedPairs so it can't come back tonight.
     case "REDEAL": return { ...dealRound(state), roundNo: state.roundNo };
@@ -241,7 +266,7 @@ function reducer(state, action) {
         history: logRound(state, state.round, winner), result: { ...state.result, winner } };
       return { ...state, phase: "board", result: null, guess: null };
     }
-    case "TO_SETUP": return { ...state, phase: "setup", round: null, result: null, guess: null, past: [] };
+    case "TO_HOME": return { ...state, phase: "home", round: null, result: null, guess: null, past: [] };
     default: return state;
   }
 }

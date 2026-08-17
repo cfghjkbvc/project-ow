@@ -51,9 +51,9 @@ function End({ state, dispatch }) {
       <div style={{ marginTop: 14 }}>
         <Btn onClick={() => dispatch({ type: "DEAL" })}>{t("dealAnother")}</Btn>
         <div style={{ height: 9 }} />
-        <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "recap" })}>{t("seeNight")}</Btn>
+        <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "night" })}>{t("theNight")}</Btn>
         <div style={{ height: 9 }} />
-        <Btn kind="btn-ghost" onClick={() => dispatch({ type: "TO_SETUP" })}>{t("backTable")}</Btn>
+        <Btn kind="btn-ghost" onClick={() => dispatch({ type: "GOTO", phase: "seats" })}>{t("whoIsHere")}</Btn>
       </div>
     </>
   );

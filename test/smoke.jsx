@@ -3,9 +3,12 @@ import { renderToString } from "react-dom/server";
 import { makeInitial, reducer, seated } from "../src/game/state.js";
 import { setLang } from "../src/data/strings.js";
 import { Shell } from "../src/ui/atoms.jsx";
-import Setup from "../src/screens/Setup.jsx";
+import Home from "../src/screens/Home.jsx";
+import Seats from "../src/screens/Seats.jsx";
+import SettingsScreen from "../src/screens/Settings.jsx";
 import Rules from "../src/screens/Rules.jsx";
-import Recap from "../src/screens/Recap.jsx";
+import Night from "../src/screens/Night.jsx";
+import Final from "../src/screens/Final.jsx";
 import { Packs, Editor } from "../src/screens/Packs.jsx";
 import { Deal } from "../src/screens/Deal.jsx";
 import Peek from "../src/screens/Peek.jsx";
@@ -14,7 +17,8 @@ import { Result } from "../src/screens/Result.jsx";
 import { Guess, GuessResult } from "../src/screens/Guess.jsx";
 import End from "../src/screens/End.jsx";
 
-const SCREEN = { setup: Setup, rules: Rules, recap: Recap, packs: Packs, editor: Editor,
+const SCREEN = { home: Home, seats: Seats, settings: SettingsScreen, rules: Rules,
+  night: Night, final: Final, packs: Packs, editor: Editor,
   deal: Deal, peek: Peek, board: Board, result: Result, guess: Guess, guessResult: GuessResult, end: End };
 
 const noop = () => {};
@@ -36,16 +40,28 @@ for (const lang of ["en", "hu"]) {
   setLang(lang);
   let s = makeInitial();
   s = { ...s, settings: { ...s.settings, ui: lang, preset: "wild", impostors: 1 } };
-  ["Anna","Bence","Csaba","Dora","Emil","Fanni","Gabor","Hanna"].forEach((n, i) => {
-    if (i > 3) s = reducer(s, { type: "ADD_PLAYER", name: n });
+  ["Anna","Bence","Csaba","Dora","Emil","Fanni","Gabor","Hanna"].forEach((n) => {
+    s = reducer(s, { type: "ADD_PLAYER", name: n });
   });
+  if (seated(s).length !== 8) throw new Error("expected 8 seated, got " + seated(s).length);
 
-  check(lang + " setup renders", () => draw(s, "setup"));
+  check(lang + " home renders (empty roster)", () => {
+    const blank = { ...makeInitial(), settings: { ...s.settings, ui: lang } };
+    if (blank.players.length) throw new Error("fresh install should have no players");
+    if (blank.phase !== "home") throw new Error("should open on home, got " + blank.phase);
+    draw(blank, "home-empty");
+  });
+  check(lang + " home renders (with roster)", () => draw(s, "home"));
+  check(lang + " seats renders", () => draw({ ...s, phase: "seats" }, "seats"));
+  check(lang + " settings renders", () => draw({ ...s, phase: "settings" }, "settings"));
   check(lang + " rules renders", () => draw({ ...s, phase: "rules" }, "rules"));
+  check(lang + " night renders", () => draw({ ...s, phase: "night" }, "night"));
   check(lang + " packs renders", () => draw({ ...s, phase: "packs" }, "packs"));
 
-  check(lang + " deals a round", () => {
+  check(lang + " dealing starts a session", () => {
+    if (s.session.active) throw new Error("session active before dealing");
     s = reducer(s, { type: "DEAL" });
+    if (!s.session.active) throw new Error("DEAL should open a session");
     if (s.phase !== "deal") throw new Error("phase is " + s.phase);
     if (!s.round.civWord || !s.round.ucWord) throw new Error("no words");
     if (s.round.civWord === s.round.ucWord) throw new Error("same word both sides");
@@ -111,13 +127,35 @@ for (const lang of ["en", "hu"]) {
     if (s.history.length !== 1) throw new Error("history has " + s.history.length);
     const h = s.history[0];
     if (!h.who.length || !h.winner || !h.civ) throw new Error("incomplete entry");
-    draw({ ...s, phase: "recap" }, "recap");
+    draw({ ...s, phase: "night" }, "night-after-round");
+  });
+
+  check(lang + " the night can be finished and closed", () => {
+    let f = reducer(s, { type: "FINISH_NIGHT" });
+    if (f.phase !== "final") throw new Error("no final phase");
+    draw(f, "final");
+    f = reducer(f, { type: "CLOSE_NIGHT" });
+    if (f.phase !== "home") throw new Error("close should land on home");
+    if (f.session.active) throw new Error("session still active");
+    if (Object.keys(f.scores).length || f.history.length || f.roundNo)
+      throw new Error("session state not cleared");
+    if (!f.players.length) throw new Error("players must survive the night");
+  });
+
+  check(lang + " Mr White is never dealt first", () => {
+    let bad = 0;
+    for (let n = 0; n < 300; n++) {
+      let g = { ...s, session: { active: true } };
+      g = reducer(g, { type: "DEAL" });
+      if (g.round.roles[g.round.dealOrder[0]] === "mrwhite") bad++;
+    }
+    if (bad) throw new Error("dealt first " + bad + " times");
   });
 
   check(lang + " mr white can win by guessing", () => {
     let g = makeInitial();
     g = { ...g, settings: { ...g.settings, ui: lang, preset: "white" } };
-    ["E","F","G","H"].forEach((n) => { g = reducer(g, { type: "ADD_PLAYER", name: n }); });
+    ["A","B","C","D","E","F","G","H"].forEach((n) => { g = reducer(g, { type: "ADD_PLAYER", name: n }); });
     g = reducer(g, { type: "DEAL" });
     const white = Object.keys(g.round.roles).find((k) => g.round.roles[k] === "mrwhite");
     if (!white) throw new Error("no mr white at 8 players");

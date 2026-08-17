@@ -47,6 +47,12 @@ function HoldCard({ name, numeral, sigil, word, note, title, tone, stubs = 0, on
   };
   const up = () => { clearTimeout(timer.current); setOpen(false); };
 
+  // Long words have to shrink or they break mid-word across the banner, which
+  // looks wrong on a card title. Keyed off the longest single token, since
+  // "Töltött káposzta" wraps happily but "Keresztrejtvény" cannot.
+  const longest = Math.max(...String(word).split(/\s+/).map((s) => s.length));
+  const tier = longest > 13 ? "xl" : longest > 10 ? "l" : "m";
+
   /* Four nested transform layers, and they cannot be merged: float drifts,
      riser deals in, card flips. Sharing a layer means one animation stomps
      another mid-gesture. The stubs stay put while the top card lifts off. */
@@ -81,7 +87,7 @@ function HoldCard({ name, numeral, sigil, word, note, title, tone, stubs = 0, on
                   <span className="plate">{numeral}</span>
                 </div>
                 <div className="banner">
-                  <div className="word">{word}</div>
+                  <div className="word" data-len={tier}>{word}</div>
                   <div className="roleplate">
                     <div className="rp-title" style={{ color: tone }}>{title}</div>
                     <div className="rp-note">{note}</div>

@@ -12,7 +12,7 @@ function Packs({ state, dispatch }) {
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <span className="eyebrow">{t("packs")}</span>
-        <button className="eyebrow tap" onClick={() => dispatch({ type: "GOTO", phase: "setup" })}>{t("done")}</button>
+        <button className="eyebrow tap" onClick={() => dispatch({ type: "GOTO", phase: "settings" })}>{t("done")}</button>
       </div>
 
       <div className="scroll" style={{ flex: 1, paddingTop: 20, display: "flex", flexDirection: "column", gap: 7 }}>

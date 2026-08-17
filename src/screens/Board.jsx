@@ -112,7 +112,7 @@ function Board({ state, dispatch }) {
         <Sheet onClose={() => setEnding(false)} label={t("endGame")}>
           <div className="fat" style={{ fontSize: 26, textTransform: "uppercase" }}>{t("endGame")}</div>
           <p className="quiet" style={{ margin: "10px 0 20px" }}>{t("endWarn")}</p>
-          <Btn kind="btn-danger" onClick={() => dispatch({ type: "TO_SETUP" })}>{t("endBtn")}</Btn>
+          <Btn kind="btn-danger" onClick={() => dispatch({ type: "TO_HOME" })}>{t("endBtn")}</Btn>
           <div style={{ height: 9 }} />
           <Btn kind="btn-ghost" onClick={() => setEnding(false)}>{t("cancel")}</Btn>
         </Sheet>

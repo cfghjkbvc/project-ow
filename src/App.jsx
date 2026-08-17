@@ -7,9 +7,12 @@ import { store, KEY } from "./game/helpers.js";
 import { t, setLang, setHaptics } from "./data/strings.js";
 import { Shell, Btn, Sheet } from "./ui/atoms.jsx";
 
-import Setup from "./screens/Setup.jsx";
+import Home from "./screens/Home.jsx";
+import Seats from "./screens/Seats.jsx";
+import Settings from "./screens/Settings.jsx";
 import Rules from "./screens/Rules.jsx";
-import Recap from "./screens/Recap.jsx";
+import Night from "./screens/Night.jsx";
+import Final from "./screens/Final.jsx";
 import { Packs, Editor } from "./screens/Packs.jsx";
 import { Deal } from "./screens/Deal.jsx";
 import Peek from "./screens/Peek.jsx";
@@ -21,7 +24,8 @@ import End from "./screens/End.jsx";
 /* --------------------------------- App -------------------------------- */
 
 const HEADING = {
-  setup: "title", rules: "rulesTitle", recap: "recap", packs: "packs", editor: "packName",
+  home: "title", seats: "whoIsHere", settings: "settings", rules: "rulesTitle",
+  night: "theNight", final: "nightOver", packs: "packs", editor: "packName",
   deal: "dealing", peek: "peek", board: "tapVote", result: "votedOut",
   guess: "whiteOne", guessResult: "whiteGuessed", end: "whoWas",
 };
@@ -37,8 +41,8 @@ export default function OddWord() {
 
   useEffect(() => {
     store.set(KEY, { players: state.players, settings: state.settings, scores: state.scores,
-      packs: state.packs, retired: state.retired, history: state.history });
-  }, [state.players, state.settings, state.scores, state.packs, state.retired, state.history]);
+      packs: state.packs, retired: state.retired, history: state.history, session: state.session });
+  }, [state.players, state.settings, state.scores, state.packs, state.retired, state.history, state.session]);
 
   // Screen readers need to be told the screen changed; a router would do
   // this for us, but the whole app is one reducer.
@@ -70,9 +74,12 @@ export default function OddWord() {
   }, [state.phase]);
 
   const view = {
-    setup: <Setup state={state} dispatch={dispatch} />,
+    home: <Home state={state} dispatch={dispatch} />,
+    seats: <Seats state={state} dispatch={dispatch} />,
+    settings: <Settings state={state} dispatch={dispatch} />,
     rules: <Rules dispatch={dispatch} />,
-    recap: <Recap state={state} dispatch={dispatch} />,
+    night: <Night state={state} dispatch={dispatch} />,
+    final: <Final state={state} dispatch={dispatch} />,
     packs: <Packs state={state} dispatch={dispatch} />,
     editor: <Editor state={state} dispatch={dispatch} />,
     deal: <Deal state={state} dispatch={dispatch} />,

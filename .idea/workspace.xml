@@ -4,12 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="Player order and webapp configuration">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/data/packs.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/data/packs.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/screens/Deal.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/Deal.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/ui/theme.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/ui/theme.js" afterDir="false" />
-    </list>
+    <list default="true" id="42a2ef72-827e-41fc-b2ee-7a05a9f71f84" name="Changes" comment="Game screen UI overhaul" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -49,22 +44,23 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python.prep_art.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/BUas/odd-word&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python.prep_art.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/BUas/odd-word",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.pluginManager",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\leven\Downloads\odd-word\src\ui" />
@@ -125,6 +121,7 @@
       <workItem from="1786903685110" duration="4086000" />
       <workItem from="1786908523092" duration="3976000" />
       <workItem from="1786959291026" duration="5682000" />
+      <workItem from="1786977142816" duration="397000" />
     </task>
     <task id="LOCAL-00001" summary="init">
       <option name="closed" value="true" />
@@ -230,7 +227,23 @@
       <option name="project" value="LOCAL" />
       <updated>1786962540509</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Game screen UI overhaul">
+      <option name="closed" value="true" />
+      <created>1786977505598</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1786977505603</updated>
+    </task>
+    <task id="LOCAL-00015" summary="Game screen UI overhaul">
+      <option name="closed" value="true" />
+      <created>1786977529835</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1786977529835</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -258,7 +271,8 @@
     <MESSAGE value="Offline mode, UI improvements" />
     <MESSAGE value="Role explanation overhaul" />
     <MESSAGE value="Player order and webapp configuration" />
-    <option name="LAST_COMMIT_MESSAGE" value="Player order and webapp configuration" />
+    <MESSAGE value="Game screen UI overhaul" />
+    <option name="LAST_COMMIT_MESSAGE" value="Game screen UI overhaul" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/odd_word$prep_art.coverage" NAME="prep_art Coverage Results" MODIFIED="1786906252005" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />

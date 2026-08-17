@@ -1,73 +1,83 @@
 # Making Odd Word work with no signal
 
-Three things depend on the network right now: the fonts, the art, and the
-bundle itself. Fixing all three takes about ten minutes and then the game
-survives a garden, a cellar, or a train.
+Everything below is already done — this is the record of how it works and what
+to watch out for.
 
-## 1. Self-host the fonts
+## Fonts: bundled, not fetched
 
-The app pulls four faces from Google Fonts. Download them once and serve them
-yourself — this also stops the first render at a party showing fallback fonts
-while the wifi thinks about it.
-
-Easiest route is [google-webfonts-helper](https://gwfh.mranftl.com): pick each
-family, choose **latin + latin-ext** (latin-ext is required — it carries `ő`
-and `ű`, and without it the Hungarian deck renders broken), and download woff2.
-
-Put these four files in `public/fonts/`:
-
-```
-abril-fatface-400.woff2
-bodoni-moda-600.woff2
-bodoni-moda-800.woff2
-jost-400.woff2
-```
-
-Then in `src/App.jsx`:
+The three typefaces come from Fontsource as npm packages and are imported in
+`src/main.jsx`:
 
 ```js
-const SELF_HOSTED_FONTS = true;
+import "@fontsource/abril-fatface/latin-400.css";
+import "@fontsource/abril-fatface/latin-ext-400.css";
+import "@fontsource-variable/bodoni-moda/wght.css";
+import "@fontsource-variable/jost/wght.css";
 ```
 
-If your filenames differ, edit the `LOCAL_FONTS` block rather than renaming —
-it's four `url()` calls in one place.
+Vite bundles the woff2 files into `dist/assets/` with content hashes, so there
+is no runtime dependency on Google and a font change can never be served stale
+from the service worker cache.
 
-## 2. Turn on the service worker
+**`latin-ext` is not optional.** It carries `U+0100–02BA`, which is where
+Hungarian's `ő` and `ű` live. Drop it and the Hungarian deck silently falls back
+to Georgia.
 
-Copy `sw.js` and `manifest.webmanifest` into `public/`, then in `src/App.jsx`:
+**Fontsource names variable families with a suffix** — `'Bodoni Moda Variable'`,
+not `'Bodoni Moda'`. `theme.js` lists both, variable first, so it degrades to
+the static family if you ever swap packages.
 
-```js
-const ENABLE_SW = true;
+Three subsets ship that nobody downloads: Bodoni's math and symbols files and
+Jost's Cyrillic. They cost about 45KB of repo space and zero bandwidth, because
+`unicode-range` means the browser never requests them. Not worth optimising.
+
+**Licensing:** bundling the woff2 files is redistribution, and the SIL Open Font
+License requires the licence text to travel with them. That's
+`public/FONT-LICENSE.txt`. Don't delete it.
+
+## Service worker
+
+`ENABLE_SW` in `src/config.js` is `true`. `public/sw.js` precaches the shell on
+install, then treats anything under `/assets/`, `/art/` or `/fonts/` as
+immutable and cache-first. Everything else is network-first with a cache
+fallback, so a new deploy is picked up rather than pinned.
+
+**Bump `VERSION` in `sw.js` on every deploy.** It's currently `odd-word-v2`. A
+service worker will happily serve last month's bundle forever otherwise, and
+you will lose an evening working out why your changes aren't showing up.
+
+Offline works after the first visit — the shell is precached immediately, and
+art and fonts are cached as they load.
+
+## Icons
+
+```
+public/icon-192.png            any purpose
+public/icon-512.png            any purpose
+public/icon-maskable-512.png   extra safe area, Android crops to a circle
+public/apple-touch-icon.png    iOS ignores the manifest and uses this
 ```
 
-Add the manifest link to `index.html` inside `<head>`:
-
-```html
-<link rel="manifest" href="./manifest.webmanifest" />
-```
-
-Keep it relative. An absolute path breaks the moment the repo is renamed.
-
-**Bump `VERSION` in `sw.js` on every deploy.** A service worker will happily
-serve last month's bundle forever otherwise, and you will lose an evening to it.
-
-## 3. Icons
-
-The manifest expects two PNGs in `public/`:
-
-```
-icon-192.png
-icon-512.png
-```
-
-The card back makes an obvious icon — teal ground, marigold lattice, no text.
+The maskable one has wider margins on purpose. Android masks icons to whatever
+shape the launcher uses, so a full-bleed icon loses its edges — the card in the
+maskable version sits inside the centre 71% so nothing important gets cut.
 
 ## Checking it worked
 
 1. `npm run build && npm run preview`
-2. Open DevTools → Application → Service Workers, confirm it's activated
-3. Tick **Offline**, reload — the game should come up with correct fonts
-4. On a phone: open the deployed URL, then Add to Home Screen
+2. DevTools → Application → Service Workers, confirm it's activated
+3. DevTools → Application → Manifest, confirm no icon errors
+4. Tick **Offline**, reload — the game should come up with correct fonts
+5. On a phone: open the deployed URL, then Add to Home Screen
 
-The whole payload is roughly 250KB of JS plus fonts and art, so the first visit
-caches everything in a second or two and later visits never touch the network.
+## If it doesn't
+
+**Icons missing in the manifest panel.** Check the paths resolve at your
+deployed base — the manifest uses relative paths (`icon-192.png`), which
+resolve against the manifest's own location, so renaming the repo is safe.
+
+**Fonts fall back to Georgia.** Almost always the `Variable` suffix. Check
+`--f-serif` in `theme.js` lists `'Bodoni Moda Variable'` first.
+
+**Changes not appearing after deploy.** You didn't bump `VERSION`. Unregister
+the worker in DevTools, hard reload, then bump it properly.

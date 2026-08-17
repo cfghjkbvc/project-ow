@@ -11,7 +11,7 @@
    Bump VERSION whenever you deploy. The old cache is dropped on activate.
 */
 
-const VERSION = "odd-word-v1";
+const VERSION = "odd-word-v2";
 const SHELL = [
   "./",
   "./index.html",

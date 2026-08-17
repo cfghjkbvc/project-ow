@@ -1,7 +1,7 @@
 import React, { useRef, useState, useCallback } from "react";
 import { Btn } from "../ui/atoms.jsx";
 import { ROLE } from "../ui/sigils.jsx";
-import { RevealCard } from "./Result.jsx";
+import { RevealCard, RoleBlurb } from "./Result.jsx";
 import { t, buzz } from "../data/strings.js";
 import { roman } from "../game/helpers.js";
 
@@ -66,13 +66,8 @@ function RoleCarousel() {
           aria-label={t("nextRole")}>›</button>
       </div>
 
-      <div aria-live="polite" style={{ textAlign: "center", marginTop: 12, minHeight: 96 }}>
-        <div className="fat" style={{ fontSize: 24, textTransform: "uppercase", color: ROLE[role].tone }}>
-          {t("r_" + role)}
-        </div>
-        <p className="quiet" style={{ marginTop: 8, maxWidth: 300, marginLeft: "auto", marginRight: "auto" }}>
-          {t("d_" + role)}
-        </p>
+      <div aria-live="polite" style={{ marginTop: 12, minHeight: 96 }}>
+        <RoleBlurb role={role} />
       </div>
     </>
   );

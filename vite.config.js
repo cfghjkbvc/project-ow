@@ -1,10 +1,20 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
-// The repo path only applies to the built site. Serving dev from the same
-// sub-path means every wrong URL 404s silently, so dev stays at the root.
-// This must match the repository name exactly, keeping both slashes.
-export default defineConfig(({ command }) => ({
-  base: command === "build" ? "/project-ow/" : "/",
+/* base has to match where the site is actually served from.
+ *
+ *   build    -> GitHub Pages serves it under /<repo-name>/
+ *   preview  -> serves the built output, so it needs the same path
+ *   dev      -> served from the root, so a sub-path here just means every
+ *               wrong URL 404s silently
+ *
+ * `command` is "serve" for BOTH dev and preview, so it cannot tell them apart
+ * on its own — checking it alone is what made `npm run preview` come up blank.
+ * `isPreview` is the flag that actually distinguishes them.
+ *
+ * Change "/project-ow/" if you rename the repository, keeping both slashes.
+ */
+export default defineConfig(({ command, isPreview }) => ({
+  base: command === "build" || isPreview ? "/project-ow/" : "/",
   plugins: [react()],
 }));

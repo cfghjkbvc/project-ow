@@ -89,11 +89,11 @@ Prompts for both are in `art-prompts.md`.
 
 ## Offline
 
-See `OFFLINE.md`. Two flags in `src/config.js` (`SELF_HOSTED_FONTS`,
-`ENABLE_SW`) ship off so the app runs without extra files.
+Already done — see `OFFLINE.md` for how it works. Fonts are bundled from
+Fontsource, the service worker is on, and the app installs to a home screen.
 
-Download fonts with **latin + latin-ext**. Latin alone omits `ő` and `ű` and the
-Hungarian deck renders broken.
+**Bump `VERSION` in `public/sw.js` on every deploy** or you will serve a stale
+bundle to anyone who has already visited.
 
 ## Not built yet
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Btn, Sheet, Chip } from "../ui/atoms.jsx";
+import { Btn, Sheet, Chip, Lattice, Watermark } from "../ui/atoms.jsx";
 import { seated } from "../game/state.js";
 import { t, buzz } from "../data/strings.js";
 import { roman } from "../game/helpers.js";
@@ -18,15 +18,25 @@ function Board({ state, dispatch }) {
   return (
     <>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <span className="eyebrow">{t("dealNo")} {roman(state.roundNo)} · {t("left", round.alive.length)}</span>
+        <span className="eyebrow">{t("dealNo")} {roman(state.roundNo)}</span>
         <button className="eyebrow tap" onClick={() => setEnding(true)}>{t("endGame")}</button>
       </div>
 
-      <div className="rise" style={{ padding: "22px 0 2px", textAlign: "center" }}>
-        <div className="eyebrow">{t("speaksFirst")}</div>
-        <div className="fat" style={{ fontSize: 38, marginTop: 8, textTransform: "uppercase" }}>{order[0].name}</div>
+      {/* Pips read faster than a number across a table, and they show the shape
+          of the round — how many are gone, not just how many are left. */}
+      <div className="pips" aria-hidden="true">
+        {here.map((p) => (
+          <span className="pip" key={p.id} data-on={round.alive.includes(p.id) ? "1" : "0"} />
+        ))}
       </div>
-      <p className="quiet" style={{ textAlign: "center", fontSize: 12.5, marginTop: 8 }}>
+      <span className="sr-only">{t("left", round.alive.length)}</span>
+
+      <div className="rise speakwrap">
+        <Watermark index={round.sigil} />
+        <div className="eyebrow">{t("speaksFirst")}</div>
+        <div className="speaker fat">{order[0].name}</div>
+      </div>
+      <p className="quiet" style={{ textAlign: "center", fontSize: 12.5, marginTop: 10 }}>
         {order.map((p) => p.name).join(" · ")}
       </p>
 
@@ -38,7 +48,10 @@ function Board({ state, dispatch }) {
           const dead = !round.alive.includes(p.id);
           const show = dead && (settings.revealOnVote || ["mrwhite", "jester"].includes(round.roles[p.id]));
           return (
-            <button key={p.id} className={`row ${dead ? "dead" : ""}`} disabled={dead} onClick={() => setTarget(p)}>
+            <button key={p.id} className={`row ${dead ? "row-down" : ""}`} disabled={dead} onClick={() => setTarget(p)}>
+              {/* Out of the round means the card is face down, not the text
+                  struck through. Same gesture you'd use with real cards. */}
+              {dead && <Lattice scale="row" />}
               <span className="num">{roman(i + 1)}</span>
               <span className="nm">{p.name}</span>
               {!dead && !!(round.peeks || {})[p.id] && (
@@ -46,9 +59,9 @@ function Board({ state, dispatch }) {
                   {t("peekedN", round.peeks[p.id])}
                 </span>
               )}
-              {dead && <span style={{ marginLeft: "auto" }}>
+              {dead && <span style={{ marginLeft: "auto", position: "relative", zIndex: 1 }}>
                 {show ? <Chip role={round.roles[p.id]} />
-                  : <span className="chip" style={{ background: "transparent", color: "var(--muted)", borderColor: "var(--hair)" }}>—</span>}
+                  : <span className="chip" style={{ background: "var(--bone)", color: "var(--ink)", borderColor: "var(--ink)" }}>—</span>}
               </span>}
             </button>
           );

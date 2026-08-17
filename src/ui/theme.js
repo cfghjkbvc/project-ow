@@ -12,8 +12,8 @@ const CSS = FONT_CSS + `
   --celadon:#B9DFC8; --olive:#B9DFC8; --oxblood:#3D63C4;
   --hair:rgba(247,235,207,.24); --muted:rgba(247,235,207,.74);
   --f-fat:'Abril Fatface',Georgia,serif;
-  --f-serif:'Bodoni Moda',Georgia,serif;
-  --f-ui:'Jost',system-ui,sans-serif;
+  --f-serif:'Bodoni Moda Variable','Bodoni Moda',Georgia,serif;
+  --f-ui:'Jost Variable','Jost',system-ui,sans-serif;
   position:relative; min-height:100svh; background:var(--teal); color:var(--bone);
   font-family:var(--f-ui); -webkit-font-smoothing:antialiased; overflow:hidden;
 }
@@ -110,8 +110,14 @@ const CSS = FONT_CSS + `
 
 .ow .stage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
   gap:14px; perspective:1600px; padding:12px 0;}
-.ow .card-wrap{width:min(100%, 340px, calc(58svh * 0.676)); container-type:inline-size;
-  animation:ow-deal .5s cubic-bezier(.16,.9,.3,1) both;}
+.ow .card-wrap{width:min(100%, 380px, calc(62svh * 0.676)); container-type:inline-size;
+  animation:ow-rise-in .44s cubic-bezier(.2,.75,.3,1) both;}
+/* The deck the top card lifts off. The stub count is how many players are
+   still to be dealt, so the flourish also tells you how far through you are. */
+.ow .stack{position:relative; width:100%;}
+.ow .stub{position:absolute; inset:0; border-radius:5px; background:var(--bone);
+  border:2px solid var(--ink); box-shadow:0 8px 18px rgba(0,0,0,.35); z-index:0;}
+.ow .riser{position:relative; z-index:1; animation:ow-lift .46s cubic-bezier(.18,.8,.28,1) both;}
 .ow .float{animation:ow-float 7s ease-in-out infinite;}
 .ow .card{width:100%; aspect-ratio:5/7.4; position:relative; transform-style:preserve-3d;
   transition:transform .42s cubic-bezier(.45,.05,.55,.95); will-change:transform;
@@ -183,11 +189,59 @@ const CSS = FONT_CSS + `
   scrollbar-width:none; -ms-overflow-style:none; -webkit-overflow-scrolling:touch;}
 .ow .carou::-webkit-scrollbar{display:none;}
 .ow .rolecard{flex:0 0 212px; width:212px; scroll-snap-align:center;}
-.ow .rolecard .reveal,.ow .rolecard .reveal-img{width:100%; animation:none;}
+.ow .rolecard .turn-static,.ow .rolecard img{width:100%; animation:none;}
 .ow .carou .dot{width:8px; height:8px; padding:0; transform:rotate(45deg);}
 .ow .mini{flex:1; background:var(--bone); border:2px solid var(--ink); padding:9px 8px 7px; text-align:center;}
 .ow .mini .k{font-family:var(--f-ui); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:rgba(23,18,14,.6);}
 .ow .mini .v{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink); font-size:19px; margin-top:4px;}
+
+/* The public role card, turned rather than faded in. Same opacity trick as the
+   deal card: backface-visibility alone is unreliable once a face has overflow
+   and a shadow, so the hidden face is switched off at the true midpoint. */
+.ow .turn{position:relative; width:min(236px, calc(46svh * 0.63)); aspect-ratio:5/7.9;
+  transform-style:preserve-3d; will-change:transform;
+  transition:transform .5s cubic-bezier(.45,.05,.55,.95);
+  animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
+.ow .turn[data-open="1"]{transform:rotateY(180deg);}
+.ow .tface{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
+  overflow:hidden; border-radius:5px; background:var(--bone); border:2px solid var(--ink);
+  box-shadow:0 16px 34px rgba(0,0,0,.5); transition:opacity 0s linear .25s;}
+.ow .tback{transform:translateZ(1px); padding:8px; display:flex;}
+.ow .tback .lattice{position:relative; flex:1; border:1px solid var(--ink);}
+.ow .tfront{transform:rotateY(180deg) translateZ(1px); border:0; background:none;}
+.ow .turn[data-open="0"] .tfront{opacity:0;}
+.ow .turn[data-open="1"] .tback{opacity:0;}
+.ow .turn-img{display:block; width:100%; height:100%; object-fit:cover; border-radius:4px;}
+.ow .turn-static{width:100%;}
+.ow .turn-static img{display:block; width:100%; height:auto; border-radius:5px;
+  box-shadow:0 12px 26px rgba(0,0,0,.45);}
+.ow .turn-static .turn-fallback{height:auto; aspect-ratio:5/7.9;
+  box-shadow:0 12px 26px rgba(0,0,0,.45);}
+.ow .turn-fallback{width:100%; height:100%; background:var(--bone); border:2px solid var(--ink);
+  border-radius:5px; padding:8px; display:flex; flex-direction:column;}
+.ow .turn-fallback .pane{flex:1; background:var(--bone); border:1px solid var(--ink);
+  display:flex; align-items:center; justify-content:center;}
+.ow .turn-fallback .sig{width:58%; max-width:110px;}
+.ow .turn-fallback .cap{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink);
+  font-size:19px; padding:7px 2px 2px; text-align:center;}
+
+/* Board: pips, the speaker plate, the round's sigil behind it. */
+.ow .pips{display:flex; gap:6px; justify-content:center; padding:14px 0 0;}
+.ow .pip{width:7px; height:7px; transform:rotate(45deg); border:1px solid var(--bone); opacity:.5;}
+.ow .pip[data-on="1"]{background:var(--marigold); border-color:var(--marigold); opacity:1;}
+.ow .speakwrap{position:relative; text-align:center; padding:16px 0 2px;}
+.ow .watermark{position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
+  width:190px; max-width:70%; opacity:.11; color:var(--bone); pointer-events:none; z-index:0;}
+.ow .speakwrap .eyebrow,.ow .speaker{position:relative; z-index:1;}
+.ow .speaker{display:inline-block; margin-top:9px; padding:7px 20px 6px;
+  background:var(--bone); color:var(--ink); text-transform:uppercase; font-size:30px; line-height:1.1;
+  border:2px solid var(--ink); box-shadow:inset 0 0 0 3px var(--bone), inset 0 0 0 4px var(--ink);}
+
+/* A player out of the round is a card turned face down. */
+.ow .row-down{position:relative; overflow:hidden; border-color:var(--ink); background:var(--bone);}
+.ow .row-down .num{position:relative; z-index:1; color:var(--ink);}
+.ow .row-down .nm{position:relative; z-index:1; background:var(--bone); color:var(--ink);
+  padding:1px 9px 2px; border:1px solid var(--ink); font-size:17px;}
 
 .ow .sheet{position:fixed; inset:0; background:rgba(9,20,22,.82); display:flex; z-index:30;
   align-items:flex-end; justify-content:center; padding:16px; animation:ow-fade .18s ease both;}
@@ -197,7 +251,10 @@ const CSS = FONT_CSS + `
   background:var(--bone); color:var(--ink); border:2px solid var(--ink); padding:11px 20px;
   font-size:12px; letter-spacing:.14em; text-transform:uppercase; animation:ow-up .2s ease both;}
 
-@keyframes ow-deal{from{opacity:0; transform:translateY(28px) rotate(3deg) scale(.94);} to{opacity:1; transform:none;}}
+@keyframes ow-rise-in{from{opacity:0; transform:translateY(26px);} to{opacity:1; transform:none;}}
+/* A card lifted off a deck: up, slight overshoot, settle. No rotation — that
+   read as a web animation rather than a hand dealing. */
+@keyframes ow-lift{0%{transform:translateY(34px);} 62%{transform:translateY(-5px);} 100%{transform:translateY(0);}}
 @keyframes ow-float{0%,100%{transform:translateY(0) rotate(-.4deg);} 50%{transform:translateY(-6px) rotate(.4deg);}}
 @keyframes ow-sheen{from{transform:translateX(-130%) skewX(-14deg);} to{transform:translateX(240%) skewX(-14deg);}}
 @keyframes ow-rise{from{opacity:0; transform:translateY(9px);} to{opacity:1; transform:none;}}

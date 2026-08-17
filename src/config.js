@@ -11,7 +11,7 @@
 
 export const BASE = import.meta.env.BASE_URL;
 export const ART = (f) => BASE + "art/" + f;
-export const ENABLE_SW = false; // flip to true once public/sw.js exists
+export const ENABLE_SW = true; // public/sw.js precaches the shell for offline play
 
 export const SIGIL_ART = Array.from({ length: 6 }, (_, i) =>
   ART(`sigil/${i + 1}.webp`)
@@ -24,23 +24,8 @@ export const ROLE_ART = {
   accomplice: ART("role-accomplice.webp"),
 };
 
-/* Fonts. Flip SELF_HOSTED once the woff2 files are in public/fonts/ —
-   Google Fonts is a network dependency and the game gets played in gardens.
-   See OFFLINE.md for the four files to download. */
-export const SELF_HOSTED_FONTS = false;
-
-const GOOGLE_FONTS =
-  "@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Bodoni+Moda:opsz,wght@6..96,400;6..96,600;6..96,800&family=Jost:wght@400;500&display=swap');";
-
-const LOCAL_FONTS = `
-@font-face{font-family:'Abril Fatface'; src:url('${BASE}fonts/abril-fatface-400.woff2') format('woff2');
-  font-weight:400; font-style:normal; font-display:swap;}
-@font-face{font-family:'Bodoni Moda'; src:url('${BASE}fonts/bodoni-moda-600.woff2') format('woff2');
-  font-weight:600; font-style:normal; font-display:swap;}
-@font-face{font-family:'Bodoni Moda'; src:url('${BASE}fonts/bodoni-moda-800.woff2') format('woff2');
-  font-weight:800; font-style:normal; font-display:swap;}
-@font-face{font-family:'Jost'; src:url('${BASE}fonts/jost-400.woff2') format('woff2');
-  font-weight:400 500; font-style:normal; font-display:swap;}
-`;
-
-export const FONT_CSS = SELF_HOSTED_FONTS ? LOCAL_FONTS : GOOGLE_FONTS;
+/* Fonts are self-hosted through Fontsource and imported in main.jsx, so Vite
+   bundles and fingerprints them. Nothing is left to inject at runtime, but
+   theme.js still concatenates FONT_CSS, so it stays as an empty string rather
+   than disappearing. */
+export const FONT_CSS = "";

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Btn, Sheet, Chip, Lattice, Watermark } from "../ui/atoms.jsx";
+import { Btn, Sheet, Chip, Lattice } from "../ui/atoms.jsx";
 import { seated } from "../game/state.js";
 import { t, buzz } from "../data/strings.js";
 import { roman } from "../game/helpers.js";
@@ -31,15 +31,6 @@ function Board({ state, dispatch }) {
       </div>
       <span className="sr-only">{t("left", round.alive.length)}</span>
 
-      <div className="rise speakwrap">
-        <Watermark index={round.sigil} />
-        <div className="eyebrow">{t("speaksFirst")}</div>
-        <div className="speaker fat">{order[0].name}</div>
-      </div>
-      <p className="quiet" style={{ textAlign: "center", fontSize: 12.5, marginTop: 10 }}>
-        {order.map((p) => p.name).join(" · ")}
-      </p>
-
       <div className="rule-dbl" />
       <div className="eyebrow">{t("tapVote")}</div>
 
@@ -54,7 +45,10 @@ function Board({ state, dispatch }) {
               {dead && <Lattice scale="row" />}
               <span className="num">{roman(i + 1)}</span>
               <span className="nm">{p.name}</span>
-              {!dead && !!(round.peeks || {})[p.id] && (
+              {!dead && p.id === order[0].id && (
+                <span className="starts">{t("startsHere")}</span>
+              )}
+              {!dead && p.id !== order[0].id && !!(round.peeks || {})[p.id] && (
                 <span className="quiet" style={{ marginLeft: "auto", fontSize: 11 }}>
                   {t("peekedN", round.peeks[p.id])}
                 </span>

@@ -10,10 +10,9 @@ import { roman } from "../game/helpers.js";
    says which side you're on. Only the words and the title colour differ, and
    civilian and impostor share both.
 
-   The plate exists because a Jester who doesn't notice they're the Jester
-   plays the round as a civilian and the role is wasted. For the Accomplice
-   the partner's name is the one thing they need, so it becomes the headline
-   rather than sitting buried in the small print. */
+   Special-role titles are the WIN CONDITION, not the role name. A Jester who
+   reads "JESTER" learns nothing; "GET VOTED OUT" is unmissable. The Accomplice
+   gets the partner's name, because that is the one thing they need. */
 const TITLE_TONE = {
   civilian: "var(--bone)",
   undercover: "var(--bone)",
@@ -28,9 +27,12 @@ function cardFace(role, round) {
   const title =
     role === "accomplice" ? round.accompliceOf
       : role === "mrwhite" ? t("noWordPlate")
-        : role === "jester" ? t("r_jester")
+        : role === "jester" ? t("jesterPlate")
           : t("yourWord");
-  return { word, note: n[role], title, tone: TITLE_TONE[role] };
+  // The Accomplice is shown the impostor's word as well as their own — that is
+  // the whole role: steer the talk onto ground where the odd clue sounds normal.
+  const note = role === "accomplice" ? n.accomplice(round.ucWord) : n[role];
+  return { word, note, title, tone: TITLE_TONE[role] };
 }
 
 function HoldCard({ name, numeral, sigil, word, note, title, tone, stubs = 0, onSeen }) {
@@ -53,7 +55,8 @@ function HoldCard({ name, numeral, sigil, word, note, title, tone, stubs = 0, on
       <div className={open ? "" : "float"}>
         <div className="stack">
           {Array.from({ length: Math.min(stubs, 3) }, (_, i) => (
-            <span className="stub" key={i} style={{ transform: `translate(${(i + 1) * 3}px, ${(i + 1) * 5}px)` }} />
+            <span className="stub" key={i}
+              style={{ transform: `translateY(${(i + 1) * 5}px) scale(${1 - (i + 1) * 0.018})` }} />
           ))}
           <div className="riser">
             <div className="card" data-open={open ? "1" : "0"}

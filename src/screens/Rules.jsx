@@ -66,8 +66,16 @@ function RoleCarousel() {
           aria-label={t("nextRole")}>›</button>
       </div>
 
-      <div aria-live="polite" style={{ marginTop: 12, minHeight: 96 }}>
+      <div aria-live="polite" style={{ marginTop: 12 }}>
         <RoleBlurb role={role} />
+        {/* A fixed four-part shape, so roles are comparable rather than five
+            paragraphs that each answer a different question. */}
+        <dl className="facts">
+          <dt>{t("lbl_holds")}</dt><dd>{t("h_" + role)}</dd>
+          <dt>{t("lbl_knows")}</dt><dd>{t("k_" + role)}</dd>
+          <dt>{t("lbl_wins")}</dt><dd>{t("w_" + role)}</dd>
+          <dt>{t("lbl_watch")}</dt><dd>{t("x_" + role)}</dd>
+        </dl>
       </div>
     </>
   );
@@ -99,6 +107,17 @@ function Rules({ dispatch }) {
         <div className="eyebrow" style={{ textAlign: "center" }}>{t("theRoles")}</div>
         <p className="quiet" style={{ textAlign: "center", fontSize: 12, marginTop: 6 }}>{t("swipeRoles")}</p>
         <RoleCarousel />
+
+        {/* A worked round teaches a hidden-role game faster than any rule text. */}
+        <div className="rule-dbl" />
+        <div className="eyebrow">{t("exampleTitle")}</div>
+        <div className="example">
+          <p>{t("ex1", t("exA"), t("exB"))}</p>
+          <p>{t("ex2", "Anna")}</p>
+          <p>{t("ex3", "Bence")}</p>
+          <p>{t("ex4", "Csaba")}</p>
+          <p>{t("ex5", "Csaba", t("exB"))}</p>
+        </div>
 
         <div className="rule-dbl" />
         <div className="eyebrow">{t("houseRule")}</div>

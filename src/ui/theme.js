@@ -113,10 +113,13 @@ const CSS = FONT_CSS + `
 .ow .card-wrap{width:min(100%, 380px, calc(62svh * 0.676)); container-type:inline-size;
   animation:ow-rise-in .44s cubic-bezier(.2,.75,.3,1) both;}
 /* The deck the top card lifts off. The stub count is how many players are
-   still to be dealt, so the flourish also tells you how far through you are. */
+   still to be dealt, so the flourish also tells you how far through you are.
+   Straight down and tapering, never sideways — the card rises vertically, so a
+   diagonal deck fights the motion. */
 .ow .stack{position:relative; width:100%;}
 .ow .stub{position:absolute; inset:0; border-radius:5px; background:var(--bone);
-  border:2px solid var(--ink); box-shadow:0 8px 18px rgba(0,0,0,.35); z-index:0;}
+  border:2px solid var(--ink); box-shadow:0 6px 14px rgba(0,0,0,.3); z-index:0;
+  transform-origin:center top;}
 .ow .riser{position:relative; z-index:1; animation:ow-lift .46s cubic-bezier(.18,.8,.28,1) both;}
 .ow .float{animation:ow-float 7s ease-in-out infinite;}
 .ow .card{width:100%; aspect-ratio:5/7.4; position:relative; transform-style:preserve-3d;
@@ -195,17 +198,21 @@ const CSS = FONT_CSS + `
 .ow .mini .k{font-family:var(--f-ui); font-size:8.5px; letter-spacing:.2em; text-transform:uppercase; color:rgba(23,18,14,.6);}
 .ow .mini .v{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink); font-size:19px; margin-top:4px;}
 
-/* The public role card, turned rather than faded in. Same opacity trick as the
-   deal card: backface-visibility alone is unreliable once a face has overflow
-   and a shadow, so the hidden face is switched off at the true midpoint. */
+/* The public role card, turned rather than faded in.
+
+   The rise animation MUST live on a wrapper, not on .turn itself. An animation
+   with fill-mode:both keeps its final transform applied forever, and animated
+   values beat normal declarations in the cascade — so rotateY(180deg) was being
+   silently overridden and the card only ever cross-faded. Perspective has to
+   move onto the wrapper too, since it only applies to direct children. */
+.ow .turnwrap{perspective:1200px; animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
 .ow .turn{position:relative; width:min(236px, calc(46svh * 0.63)); aspect-ratio:5/7.9;
   transform-style:preserve-3d; will-change:transform;
-  transition:transform .5s cubic-bezier(.45,.05,.55,.95);
-  animation:ow-rise-in .4s cubic-bezier(.2,.75,.3,1) both;}
+  transition:transform .55s cubic-bezier(.45,.05,.55,.95);}
 .ow .turn[data-open="1"]{transform:rotateY(180deg);}
 .ow .tface{position:absolute; inset:0; backface-visibility:hidden; -webkit-backface-visibility:hidden;
   overflow:hidden; border-radius:5px; background:var(--bone); border:2px solid var(--ink);
-  box-shadow:0 16px 34px rgba(0,0,0,.5); transition:opacity 0s linear .25s;}
+  box-shadow:0 16px 34px rgba(0,0,0,.5); transition:opacity 0s linear .28s;}
 .ow .tback{transform:translateZ(1px); padding:8px; display:flex;}
 .ow .tback .lattice{position:relative; flex:1; border:1px solid var(--ink);}
 .ow .tfront{transform:rotateY(180deg) translateZ(1px); border:0; background:none;}
@@ -225,23 +232,31 @@ const CSS = FONT_CSS + `
 .ow .turn-fallback .cap{font-family:var(--f-fat); text-transform:uppercase; color:var(--ink);
   font-size:19px; padding:7px 2px 2px; text-align:center;}
 
-/* Board: pips, the speaker plate, the round's sigil behind it. */
-.ow .pips{display:flex; gap:6px; justify-content:center; padding:14px 0 0;}
+/* Board: pips and the round marker. */
+.ow .pips{display:flex; gap:6px; justify-content:center; padding:14px 0 4px;}
 .ow .pip{width:7px; height:7px; transform:rotate(45deg); border:1px solid var(--bone); opacity:.5;}
 .ow .pip[data-on="1"]{background:var(--marigold); border-color:var(--marigold); opacity:1;}
-.ow .speakwrap{position:relative; text-align:center; padding:16px 0 2px;}
-.ow .watermark{position:absolute; left:50%; top:52%; transform:translate(-50%,-50%);
-  width:190px; max-width:70%; opacity:.11; color:var(--bone); pointer-events:none; z-index:0;}
-.ow .speakwrap .eyebrow,.ow .speaker{position:relative; z-index:1;}
-.ow .speaker{display:inline-block; margin-top:9px; padding:7px 20px 6px;
-  background:var(--bone); color:var(--ink); text-transform:uppercase; font-size:30px; line-height:1.1;
-  border:2px solid var(--ink); box-shadow:inset 0 0 0 3px var(--bone), inset 0 0 0 4px var(--ink);}
+.ow .starts{margin-left:auto; font-size:9.5px; letter-spacing:.16em; text-transform:uppercase;
+  color:var(--ink); background:var(--marigold); border:1px solid var(--ink); padding:4px 9px;}
 
 /* A player out of the round is a card turned face down. */
 .ow .row-down{position:relative; overflow:hidden; border-color:var(--ink); background:var(--bone);}
 .ow .row-down .num{position:relative; z-index:1; color:var(--ink);}
 .ow .row-down .nm{position:relative; z-index:1; background:var(--bone); color:var(--ink);
   padding:1px 9px 2px; border:1px solid var(--ink); font-size:17px;}
+
+/* Role facts: a fixed four-part shape so the roles are comparable. */
+.ow .facts{display:grid; grid-template-columns:auto 1fr; gap:7px 13px; margin-top:14px;
+  text-align:left; max-width:330px; margin-left:auto; margin-right:auto;}
+.ow .facts dt{font-size:9.5px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--marigold); padding-top:3px; white-space:nowrap;}
+.ow .facts dd{margin:0; font-size:13px; line-height:1.5; color:var(--bone);}
+.ow .example{background:var(--teal-l); border:1px solid var(--hair); padding:15px 16px; margin-top:13px;}
+.ow .example p{font-size:13px; line-height:1.65; color:var(--muted);}
+.ow .example p + p{margin-top:7px;}
+.ow .example b{color:var(--bone); font-weight:500;}
+.ow .example .w{font-family:var(--f-fat); color:var(--marigold); font-size:15px;
+  text-transform:uppercase; letter-spacing:.02em;}
 
 .ow .sheet{position:fixed; inset:0; background:rgba(9,20,22,.82); display:flex; z-index:30;
   align-items:flex-end; justify-content:center; padding:16px; animation:ow-fade .18s ease both;}

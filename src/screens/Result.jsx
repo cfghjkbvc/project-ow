@@ -30,11 +30,13 @@ function RoleTurn({ role, sealed }) {
   }, [sealed]);
 
   return (
-    <div className="turn" data-open={open ? "1" : "0"}>
-      <div className="tface tback"><Lattice /></div>
-      <div className="tface tfront">
-        {sealed ? <div className="turn-fallback"><div className="pane" /><div className="cap">{t("sealed")}</div></div>
-          : <RoleFace role={role} />}
+    <div className="turnwrap">
+      <div className="turn" data-open={open ? "1" : "0"}>
+        <div className="tface tback"><Lattice /></div>
+        <div className="tface tfront">
+          {sealed ? <div className="turn-fallback"><div className="pane" /><div className="cap">{t("sealed")}</div></div>
+            : <RoleFace role={role} />}
+        </div>
       </div>
     </div>
   );

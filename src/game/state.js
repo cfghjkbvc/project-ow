@@ -105,7 +105,10 @@ function award(state, winner) {
   seated(state).forEach((p) => {
     const r = round.roles[p.id];
     if (winner === "civilians" && (r === "civilian" || r === "jester")) add(p.id, POINTS.civilian);
-    if (winner === "impostors" && (r === "undercover" || r === "mrwhite" || r === "accomplice")) add(p.id, POINTS[r]);
+    if (winner === "impostors" && (r === "undercover" || r === "mrwhite")) add(p.id, POINTS[r]);
+    // The Accomplice has to be alive at the end. Without a failure state the
+    // role scored for doing nothing, which is why it felt weightless.
+    if (winner === "impostors" && r === "accomplice" && round.alive.includes(p.id)) add(p.id, POINTS.accomplice);
     if (winner === "mrwhite" && r === "mrwhite") add(p.id, POINTS.whiteWin);
     if (winner === "jester" && r === "jester") add(p.id, POINTS.jesterWin);
   });

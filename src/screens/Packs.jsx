@@ -3,6 +3,7 @@ import { Btn, Sheet } from "../ui/atoms.jsx";
 import { allPacks } from "../game/state.js";
 import { pairKey } from "../data/packs.js";
 import { encodePack } from "../game/share.js";
+import { parsePairList } from "../game/transfer.js";
 import { t, buzz } from "../data/strings.js";
 
 /* ------------------------------- Packs -------------------------------- */
@@ -56,6 +57,7 @@ function Editor({ state, dispatch }) {
   const [a, setA] = useState(""); const [b, setB] = useState(""); const [sim, setSim] = useState(3);
   const [err, setErr] = useState(""); const [toast, setToast] = useState("");
   const [confirmDel, setConfirmDel] = useState(false);
+  const [bulk, setBulk] = useState(null);   // null = closed, string = textarea open
 
   useEffect(() => { if (!toast) return; const id = setTimeout(() => setToast(""), 2200); return () => clearTimeout(id); }, [toast]);
   if (!pack) return null;
@@ -67,6 +69,20 @@ function Editor({ state, dispatch }) {
     setErr(""); buzz("tick");
     dispatch({ type: "PATCH_PACK", id: pack.id, patch: { pairs: [...pack.pairs, { a: a.trim(), b: b.trim(), sim }] } });
     setA(""); setB("");
+  };
+
+  /* Adding pairs one at a time is why importing a list felt appealing in the
+     first place. This eats whatever separator someone pasted and reports what
+     it could not use, rather than silently dropping lines. */
+  const addBulk = () => {
+    const existing = new Set(pack.pairs.map((p) => pairKey(p)));
+    const { pairs, skipped, dupes } = parsePairList(bulk, existing);
+    if (!pairs.length) { setErr(t("nothingToAdd")); return; }
+    buzz("tap");
+    dispatch({ type: "ADD_PAIRS", id: pack.id, pairs });
+    setBulk(null);
+    setErr("");
+    setToast(t("addedN", pairs.length, skipped + dupes));
   };
 
   const share = async () => {
@@ -127,10 +143,27 @@ function Editor({ state, dispatch }) {
       <div style={{ marginTop: 12 }}>
         <Btn kind="btn-sm" onClick={addPair}>{t("addPair")}</Btn>
         <div style={{ height: 8 }} />
+        <Btn kind="btn-ghost btn-sm" onClick={() => { setBulk(""); setErr(""); }}>{t("pasteList")}</Btn>
+        <div style={{ height: 8 }} />
         <Btn kind="btn-ghost btn-sm" disabled={!pack.pairs.length} onClick={share}>{t("sharePack")}</Btn>
         <div style={{ height: 8 }} />
         <Btn kind="btn-danger btn-sm" onClick={() => setConfirmDel(true)}>{t("deletePack")}</Btn>
       </div>
+
+      {bulk !== null && (
+        <Sheet onClose={() => setBulk(null)} label={t("pasteList")}>
+          <div className="fat" style={{ fontSize: 23, textTransform: "uppercase" }}>{t("pasteList")}</div>
+          <p className="quiet" style={{ margin: "9px 0 0", fontSize: 12.5 }}>{t("pasteListHelp")}</p>
+          <textarea className="field area" value={bulk} rows={7} autoFocus
+            placeholder={"Kávé / Tea\nBor, Sör 4\nAlma - Körte"}
+            onChange={(e) => setBulk(e.target.value)} style={{ marginTop: 11 }} />
+          {err && <div className="err">{err}</div>}
+          <div style={{ height: 12 }} />
+          <Btn disabled={!bulk.trim()} onClick={addBulk}>{t("addThem")}</Btn>
+          <div style={{ height: 9 }} />
+          <Btn kind="btn-ghost" onClick={() => setBulk(null)}>{t("cancel")}</Btn>
+        </Sheet>
+      )}
 
       {confirmDel && (
         <Sheet onClose={() => setConfirmDel(false)} label={t("deletePack")}>

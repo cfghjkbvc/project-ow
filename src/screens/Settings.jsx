@@ -14,7 +14,11 @@ function Settings({ state, dispatch }) {
   const { settings } = state;
   const here = seated(state);
   const maxImp = Math.max(1, Math.ceil(Math.max(here.length, 4) / 2) - 1);
-  const pairs = activePairs(state).length;
+  const active = activePairs(state);
+  const pairs = active.length;
+  // The Hungarian deck is a single curated tier, so a gap control over it would
+  // do nothing. Only offer it when the active packs actually span two tiers.
+  const tiers = new Set(active.map((p) => p.sim)).size;
   const preset = PRESETS[settings.preset];
   const set = (key, value) => dispatch({ type: "SET", key, value });
 
@@ -51,14 +55,18 @@ function Settings({ state, dispatch }) {
           ))}
         </div>
 
-        <div className="eyebrow" style={{ marginTop: 24 }}>{t("wordGap")}</div>
-        <div className="seg" style={{ marginTop: 11 }}>
-          {Object.keys(GAPS).map((k) => (
-            <button key={k} data-on={settings.gap === k ? "1" : "0"}
-              onClick={() => set("gap", k)}>{t("g_" + k)}</button>
-          ))}
-        </div>
-        <p className="quiet" style={{ marginTop: 10 }}>{t("gh_" + settings.gap)}</p>
+        {tiers > 1 && (
+          <>
+            <div className="eyebrow" style={{ marginTop: 24 }}>{t("wordGap")}</div>
+            <div className="seg" style={{ marginTop: 11 }}>
+              {Object.keys(GAPS).map((k) => (
+                <button key={k} data-on={settings.gap === k ? "1" : "0"}
+                  onClick={() => set("gap", k)}>{t("g_" + k)}</button>
+              ))}
+            </div>
+            <p className="quiet" style={{ marginTop: 10 }}>{t("gh_" + settings.gap)}</p>
+          </>
+        )}
 
         <div className="eyebrow" style={{ marginTop: 24 }}>{t("onVote")}</div>
         <div className="seg" style={{ marginTop: 11 }}>

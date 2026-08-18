@@ -204,6 +204,24 @@ function reducer(state, action) {
         settings: { ...state.settings, active: rest.length ? rest : ["core-en"] } };
     }
     case "RETIRE": return { ...state, retired: [...new Set([...state.retired, action.key])] };
+    case "UNRETIRE": return { ...state, retired: state.retired.filter((k) => k !== action.key) };
+    case "PATCH_PAIR":
+      return { ...state, packs: state.packs.map((p) => p.id !== action.id ? p : {
+        ...p, pairs: p.pairs.map((x, i) => i === action.index ? action.pair : x) }) };
+    case "REMOVE_PAIR":
+      return { ...state, packs: state.packs.map((p) => p.id !== action.id ? p : {
+        ...p, pairs: p.pairs.filter((_, i) => i !== action.index) }) };
+    // Built-in decks are compiled constants, so "edit this deck" means taking a
+    // copy you own. The clone replaces the original in the active list, or you
+    // would be playing every pair twice.
+    case "CLONE_PACK": {
+      const src = allPacks(state).find((p) => p.id === action.id);
+      if (!src) return state;
+      const copy = { id: uid(), name: action.name, lang: src.lang, pairs: src.pairs.map((x) => ({ ...x })) };
+      const active = state.settings.active.filter((x) => x !== src.id).concat(copy.id);
+      return { ...state, packs: [...state.packs, copy], editingId: copy.id, phase: "editor",
+        settings: { ...state.settings, active } };
+    }
     case "RESTORE_ALL": return { ...state, retired: [] };
     case "GOTO": return { ...state, phase: action.phase };
     case "RESET_SCORES": return { ...state, scores: {}, history: [] };

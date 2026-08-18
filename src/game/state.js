@@ -303,6 +303,31 @@ function reducer(state, action) {
         history: logRound(state, state.round, winner), result: { ...state.result, winner } };
       return { ...state, phase: "board", result: null, guess: null };
     }
+    // Merge keeps what you have and adds what the file brings, which is the
+    // useful case: a friend's packs without losing your own night. Replace is
+    // the restore-a-dead-phone case.
+    case "IMPORT_BACKUP": {
+      const d = action.data;
+      if (action.mode === "replace") {
+        return { ...makeInitial(), ...d, phase: "home",
+          settings: { ...makeInitial().settings, ...d.settings },
+          round: null, result: null, guess: null, past: [], usedPairs: [] };
+      }
+      const haveName = new Set(state.players.map((p) => p.name.toLowerCase()));
+      const haveKey = new Set(state.packs.map((p) => p.name.toLowerCase() + "|" + p.pairs.length));
+      const packs = [...state.packs];
+      for (const pk of d.packs) {
+        if (haveKey.has(pk.name.toLowerCase() + "|" + pk.pairs.length)) continue;
+        packs.push({ ...pk, id: uid() });   // fresh id, so nothing collides
+      }
+      return { ...state, phase: "home",
+        players: [...state.players, ...d.players.filter((p) => !haveName.has(p.name.toLowerCase()))],
+        packs,
+        retired: [...new Set([...state.retired, ...d.retired])] };
+    }
+    case "ADD_PAIRS":
+      return { ...state, packs: state.packs.map((p) =>
+        p.id === action.id ? { ...p, pairs: [...p.pairs, ...action.pairs] } : p) };
     // Everything, including the roster and custom packs. The only full reset
     // in the app, and it lives behind a confirm on the About screen.
     case "WIPE_ALL": {

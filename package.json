@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "npm run test:smoke && npm run test:transfer",
+    "test": "npm run test:audit && npm run test:smoke && npm run test:transfer",
+    "test:audit": "vite build --config test/vite.keys.config.js && node test/kdist/k.mjs",
     "test:smoke": "vite build --config test/vite.smoke.config.js && node test/dist/smoke.mjs",
     "test:transfer": "vite build --config test/vite.transfer.config.js && node test/tdist/t.mjs"
   },

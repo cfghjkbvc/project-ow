@@ -92,6 +92,9 @@ const CSS = FONT_CSS + `
   background:var(--teal-l); border:1px solid var(--hair); width:100%; text-align:left;}
 .ow .row-on{border-color:var(--marigold);}
 .ow .row-off .nm{opacity:.45;}
+/* The tappable body of a row, so the tick and the row are separate targets. */
+.ow .rowbody{flex:1; min-width:0; text-align:left; background:none; border:0;
+  padding:2px 0; color:inherit; font:inherit;}
 .ow .num{font-family:var(--f-serif); font-weight:600; font-size:12px; color:var(--marigold); min-width:26px;}
 .ow .nm{font-family:var(--f-serif); font-weight:600; font-size:19px;}
 .ow .x{margin-left:auto; color:var(--muted); font-size:19px; line-height:1;
